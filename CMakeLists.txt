@@ -21,29 +21,53 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pingnoo_start_shared_library()
+cmake_minimum_required(VERSION 3.10)
 
-pingnoo_add_sources(
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
+
+ADD_DEFINITIONS(-DNEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT)
+
+# create the font awesome library
+
+project(ThemeSupport)
+
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+
+set(library_SOURCES
     ThemeSupport.cpp
     includes/ThemeSupport.h
-    ../3rdparty/QDarkStyleSheet/qdarkstyle/light/style.qrc
-    ../3rdparty/QDarkStyleSheet/qdarkstyle/dark/style.qrc
 )
 
 if(APPLE)
-    pingnoo_add_sources(ThemeSupport_mac.mm)
+    set(platform_SOURCES ThemeSupport_mac.mm)
+    set(platform_LIBS "-framework Foundation" "-framework Cocoa" "stdc++" "objc")
 elseif(UNIX)
-    pingnoo_add_sources(ThemeSupport_linux.cpp)
+    set(platform_SOURCES ThemeSupport_linux.cpp)
+    set(platform_LIBS "")
 elseif(WIN32)
-    pingnoo_add_sources(ThemeSupport_windows.cpp)
+    set(platform_SOURCES ThemeSupport_windows.cpp)
+    set(platform_LIBS "")
 endif()
 
-pingnoo_set_description("Theme Support extension")
+set(Qt_LIBS Qt5::Core Qt5::Widgets)
 
-pingnoo_use_qt_libraries(Core Gui Widgets)
+add_library(${PROJECT_NAME} SHARED
+    ${library_SOURCES}
+    ${platform_SOURCES}
+)
 
-pingnoo_use_frameworks("Foundation" "Cocoa")
-pingnoo_use_system_libraries(APPLE stdc++ objc)
+if(DEFINED NEDRYSOFT_THEMESUPPORT_LIBRARY_DIR)
+    set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${NEDRYSOFT_THEMESUPPORT_LIBRARY_DIR}")
+    set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${NEDRYSOFT_THEMESUPPORT_LIBRARY_DIR}")
+else()
+    message(STATUS "Set NEDRYSOFT_THEMESUPPORT_LIBRARY_DIR to set the binary output dir.")
+endif()
 
-pingnoo_end_shared_library()
-
+target_link_libraries(${PROJECT_NAME} ${Qt_LIBS} ${platform_LIBS})
