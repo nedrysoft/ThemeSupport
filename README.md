@@ -1,4 +1,4 @@
-# Nedrysoft Settings Dialog
+# Nedrysoft Theme Support
 
 The ThemeSupport library provides methods to detecting the system theme (light/dark mode).
 
