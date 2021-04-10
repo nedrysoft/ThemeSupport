@@ -54,6 +54,11 @@ elseif(UNIX)
 elseif(WIN32)
     set(platform_SOURCES ThemeSupport_windows.cpp)
     set(platform_LIBS "")
+
+    configure_file("Version.h.in" "Version.h")
+    list(APPEND library_SOURCES "version.rc")
+    add_definitions("-DNEDRYSOFT_MODULE_FILENAME=\"${PROJECT_NAME}.dll\"")
+    add_definitions("-DNEDRYSOFT_MODULE_NAME=\"${PROJECT_NAME}\"")
 endif()
 
 set(Qt_LIBS Qt5::Core Qt5::Widgets)
