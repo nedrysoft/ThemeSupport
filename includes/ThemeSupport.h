@@ -35,7 +35,7 @@
 #define NEDRYSOFT_THEMESUPPORT_DLLSPEC Q_DECL_IMPORT
 #endif
 
-namespace Nedrysoft::ThemeSupport {
+namespace Nedrysoft { namespace ThemeSupport {
     enum class ThemeMode {
         System,
         Light,
@@ -100,6 +100,6 @@ namespace Nedrysoft::ThemeSupport {
         private:
             static ThemeMode m_themeMode;
     };
-}
+}}
 
 #endif // NEDRYSOFT_THEMESUPPORT_THEMESUPPORT_H
