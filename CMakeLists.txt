@@ -38,7 +38,32 @@ ADD_DEFINITIONS(-DNEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT)
 
 project(ThemeSupport)
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+# discover which Qt version is available
+
+if (USE_QT_VERSION)
+    set(QT_VERSION_MAJOR ${USE_QT_VERSION})
+else()
+    find_package(Qt6 COMPONENTS Core QUIET)
+    find_package(Qt5 COMPONENTS Core QUIET)
+
+    if (Qt6_FOUND)
+        set(QT_VERSION_MAJOR 6)
+    elseif(Qt5_FOUND)
+        set(QT_VERSION_MAJOR 5)
+    else()
+        message(FATAL_ERROR, "No valid Qt version was set, and none could be found")
+    endif()
+endif()
+
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core QUIET)
+
+if (NOT Qt${QT_VERSION_MAJOR}_FOUND)
+    message(FATAL_ERROR, "No valid Qt version was set, and none could be found")
+endif()
+
+# end of qt selection/detection
+
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 
 set(library_SOURCES
     ThemeSupport.cpp
@@ -61,7 +86,32 @@ elseif(WIN32)
     add_definitions("-DNEDRYSOFT_MODULE_NAME=\"${PROJECT_NAME}\"")
 endif()
 
-set(Qt_LIBS Qt5::Core Qt5::Widgets)
+# discover which Qt version is available
+
+if (USE_QT_VERSION)
+    set(QT_VERSION_MAJOR ${USE_QT_VERSION})
+else()
+    find_package(Qt6 COMPONENTS Core QUIET)
+    find_package(Qt5 COMPONENTS Core QUIET)
+
+    if (Qt6_FOUND)
+        set(QT_VERSION_MAJOR 6)
+    elseif(Qt5_FOUND)
+        set(QT_VERSION_MAJOR 5)
+    else()
+        message(FATAL_ERROR, "No valid Qt version was set, and none could be found")
+    endif()
+endif()
+
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core QUIET)
+
+if (NOT Qt${QT_VERSION_MAJOR}_FOUND)
+    message(FATAL_ERROR, "No valid Qt version was set, and none could be found")
+endif()
+
+# end of qt selection/detection
+
+set(Qt_LIBS Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 
 add_library(${PROJECT_NAME} SHARED
     ${library_SOURCES}

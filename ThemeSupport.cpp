@@ -31,12 +31,27 @@ Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_them
         Nedrysoft::ThemeSupport::ThemeMode::System;
 
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
+#if (QT_VERSION_MAJOR<=5)
     connect(qobject_cast<QApplication *>(QCoreApplication::instance()), &QApplication::paletteChanged, [=] (const QPalette &) {
         Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
     });
-
+#endif
     setMode(m_themeMode);
 }
+
+#if (QT_VERSION_MAJOR>=6)
+bool Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) {
+    switch(event->type()) {
+        case QEvent::ApplicationPaletteChange: {
+            Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
+
+            break;
+        }
+    }
+
+    return false;
+}
+#endif
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) -> QColor {
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
