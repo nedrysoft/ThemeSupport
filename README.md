@@ -4,7 +4,7 @@ The ThemeSupport library provides methods to detecting the system theme (light/d
 
 ## Requirements
 
-* Qt 5
+* Qt5 or Qt6
 * CMake
 
 ## Building

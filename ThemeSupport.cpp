@@ -47,6 +47,10 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) -> bool {
 
             break;
         }
+
+        default: {
+            break;
+        }
     }
 
     return QObject::event(event);
