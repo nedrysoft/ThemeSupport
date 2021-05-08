@@ -97,10 +97,16 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             static auto getHighlightedBackground() -> QColor;
 
-            void applicationPaletteChanged();
-
+        protected:
 #if (QT_VERSION_MAJOR>=6)
-            bool event(QEvent *event) override;
+            /**
+             * @brief       Reimplements: QObject::event(QEvent *event).
+             *
+             * @param[in]   event the event information.
+             *
+             * @returns     true if the event was handled; otherwise false.
+             */
+            auto event(QEvent *event) -> bool override;
 #endif
         private:
             static ThemeMode m_themeMode;

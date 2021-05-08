@@ -40,7 +40,7 @@ Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
 }
 
 #if (QT_VERSION_MAJOR>=6)
-bool Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) {
+auto Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) -> bool {
     switch(event->type()) {
         case QEvent::ApplicationPaletteChange: {
             Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
@@ -49,7 +49,7 @@ bool Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) {
         }
     }
 
-    return false;
+    return QObject::event(event);
 }
 #endif
 
