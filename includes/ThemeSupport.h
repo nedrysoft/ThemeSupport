@@ -24,10 +24,11 @@
 #ifndef NEDRYSOFT_THEMESUPPORT_THEMESUPPORT_H
 #define NEDRYSOFT_THEMESUPPORT_THEMESUPPORT_H
 
+#include <QtGlobal>
+
 #include <QColor>
 #include <QObject>
 #include <QRgb>
-#include <QtGlobal>
 
 #if ( defined(NEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT))
 #define NEDRYSOFT_THEMESUPPORT_DLLSPEC Q_DECL_EXPORT
