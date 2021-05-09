@@ -32,8 +32,11 @@
 Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
         Nedrysoft::ThemeSupport::ThemeMode::System;
 
+Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_eventProxyWidget =
+        new QWidget;
+
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
-#if (QT_VERSION_MAJOR<=6)
+#if (QT_VERSION_MAJOR<6)
     connect(qobject_cast<QApplication *>(QCoreApplication::instance()), &QApplication::paletteChanged, [=] (const QPalette &) {
         Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
     });
