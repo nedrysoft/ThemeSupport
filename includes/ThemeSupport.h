@@ -58,6 +58,11 @@ namespace Nedrysoft { namespace ThemeSupport {
             explicit ThemeSupport();
 
             /**
+             * @brief       Destroys the ThemeSupport.
+             */
+            ~ThemeSupport();
+
+            /**
              * @brief       Sets the application theme mode.
              *
              * @param[in]   mode the mode to set.
@@ -106,10 +111,12 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     true if the event was handled; otherwise false.
              */
-            auto event(QEvent *event) -> bool override;
+            //auto event(QEvent *event)  -> bool override;
+             auto eventFilter(QObject *object, QEvent *event) -> bool override;
 #endif
         private:
             static ThemeMode m_themeMode;
+            QWidget *m_eventProxyWidget;
     };
 }}
 

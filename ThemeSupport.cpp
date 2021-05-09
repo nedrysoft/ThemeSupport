@@ -27,20 +27,30 @@
 #include <QFile>
 #include <QTextStream>
 
+#include <QWidget>
+
 Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
         Nedrysoft::ThemeSupport::ThemeMode::System;
 
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
-#if (QT_VERSION_MAJOR<=5)
+#if (QT_VERSION_MAJOR<=6)
     connect(qobject_cast<QApplication *>(QCoreApplication::instance()), &QApplication::paletteChanged, [=] (const QPalette &) {
         Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
     });
 #endif
+    m_eventProxyWidget = new QWidget;
+
+    m_eventProxyWidget->installEventFilter(this);
+
     setMode(m_themeMode);
 }
 
+Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
+    delete m_eventProxyWidget;
+}
+
 #if (QT_VERSION_MAJOR>=6)
-auto Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) -> bool {
+auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent *event) -> bool  {
     switch(event->type()) {
         case QEvent::ApplicationPaletteChange: {
             Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
@@ -53,7 +63,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::event(QEvent *event) -> bool {
         }
     }
 
-    return QObject::event(event);
+    return QObject::eventFilter(object, event);
 }
 #endif
 
