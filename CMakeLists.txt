@@ -73,6 +73,8 @@ endif()
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 
+set(Qt_LIBS Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
+
 set(library_SOURCES
     ThemeSupport.cpp
     includes/ThemeSupport.h
@@ -93,41 +95,6 @@ elseif(WIN32)
     add_definitions("-DNEDRYSOFT_MODULE_FILENAME=\"${PROJECT_NAME}.dll\"")
     add_definitions("-DNEDRYSOFT_MODULE_NAME=\"${PROJECT_NAME}\"")
 endif()
-
-# discover which Qt version is available
-
-if (NOT DEFINED QT_VERSION_MAJOR)
-    if (DEFINED USE_QT_VERSION)
-        set(QT_VERSION_MAJOR ${USE_QT_VERSION})
-        message(STATUS "Qt${QT_VERSION_MAJOR} has been manually selected")
-    else()
-        message(STATUS "Detecting Qt version")
-
-        find_package(Qt6 COMPONENTS Core QUIET)
-        find_package(Qt5 COMPONENTS Core QUIET)
-
-        if (Qt6_FOUND)
-            set(QT_VERSION_MAJOR 6)
-        elseif(Qt5_FOUND)
-            set(QT_VERSION_MAJOR 5)
-        else()
-            message(FATAL_ERROR "No valid Qt version was set, and none could be found")
-        endif()
-        message(STATUS "Detecting Qt version - done")
-    endif()
-
-    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core QUIET)
-
-    if (NOT Qt${QT_VERSION_MAJOR}_FOUND)
-        message(FATAL_ERROR "Qt${QT_VERSION_MAJOR} could not be found")
-    endif()
-
-    message(STATUS "Qt major version: ${QT_VERSION_MAJOR}")
-endif()
-
-# end of qt selection/detection
-
-set(Qt_LIBS Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 
 add_library(${PROJECT_NAME} SHARED
     ${library_SOURCES}
