@@ -32,24 +32,22 @@
 Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
         Nedrysoft::ThemeSupport::ThemeMode::System;
 
-Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_eventProxyWidget =
-        new QWidget;
-
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
+    static auto eventProxyWidget = new QWidget;
+
 #if (QT_VERSION_MAJOR<6)
     connect(qobject_cast<QApplication *>(QCoreApplication::instance()), &QApplication::paletteChanged, [=] (const QPalette &) {
         Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
     });
 #endif
-    m_eventProxyWidget = new QWidget;
 
-    m_eventProxyWidget->installEventFilter(this);
+    eventProxyWidget->installEventFilter(this);
 
     setMode(m_themeMode);
 }
 
 Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
-    delete m_eventProxyWidget;
+
 }
 
 #if (QT_VERSION_MAJOR>=6)
