@@ -76,18 +76,18 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 set(Qt_LIBS Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 
 set(library_SOURCES
-    ThemeSupport.cpp
-    includes/ThemeSupport.h
+    src/ThemeSupport.cpp
+    src/ThemeSupport.h
 )
 
 if(APPLE)
-    set(platform_SOURCES ThemeSupport_mac.mm)
+    set(platform_SOURCES src/ThemeSupport_mac.mm)
     set(platform_LIBS "-framework Foundation" "-framework Cocoa" "stdc++" "objc")
 elseif(UNIX)
-    set(platform_SOURCES ThemeSupport_linux.cpp)
+    set(platform_SOURCES src/ThemeSupport_linux.cpp)
     set(platform_LIBS "")
 elseif(WIN32)
-    set(platform_SOURCES ThemeSupport_windows.cpp)
+    set(platform_SOURCES src/ThemeSupport_windows.cpp)
     set(platform_LIBS "")
 
     configure_file("Version.h.in" "Version.h")

@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2020 Adrian Carpenter
  *
- * This file is part of the Nedrysoft Ribbon Bar. (https://github.com/nedrysoft/qt-ribbon)
+ * This file is part of Pingnoo (https://github.com/nedrysoft/pingnoo)
  *
- * A cross-platform ribbon bar for Qt applications.
+ * An open-source cross-platform traceroute analyser.
  *
  * Created by Adrian Carpenter on 31/03/2021.
  *
@@ -21,16 +21,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "includes/ThemeSupport.h"
-
-#include <QApplication>
-#include <QStyle>
-
-auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
-    return m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Dark;
-}
-
-auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor {
-    return qobject_cast<QApplication *>(QCoreApplication::instance())->style()->standardPalette().color(QPalette::Highlight);
-}
-
+#include "../src/ThemeSupport.h"
