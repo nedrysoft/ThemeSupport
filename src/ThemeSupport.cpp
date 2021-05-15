@@ -29,8 +29,10 @@
 
 #include <QWidget>
 
+//! @cond
 Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
         Nedrysoft::ThemeSupport::ThemeMode::System;
+//! @endcond
 
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
     static auto eventProxyWidget = new QWidget;

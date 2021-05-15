@@ -115,8 +115,12 @@ namespace Nedrysoft { namespace ThemeSupport {
              auto eventFilter(QObject *object, QEvent *event) -> bool override;
 #endif
         private:
+            //! @cond
+
             static ThemeMode m_themeMode;
             static QWidget *m_eventProxyWidget;
+
+            //! @endcond
     };
 }}
 
