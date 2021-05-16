@@ -103,6 +103,15 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             static auto getHighlightedBackground() -> QColor;
 
+            /**
+             * @brief       Loads a saved palette.
+             *
+             * @param[in]   filename the filename of the palette to load.
+             *
+             * @returns     true if loaded; otherwise false.
+             */
+            auto loadPalette(const QString &filename) -> bool;
+
         protected:
 #if (QT_VERSION_MAJOR>=6)
             /**

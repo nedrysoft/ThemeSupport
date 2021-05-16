@@ -26,12 +26,13 @@
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
-
 #include <QWidget>
 
 //! @cond
+
 Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
         Nedrysoft::ThemeSupport::ThemeMode::System;
+
 //! @endcond
 
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
@@ -81,10 +82,13 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::The
         }
 
         case Nedrysoft::ThemeSupport::ThemeMode::Light: {
+            loadPalette(":/Nedrysoft/ThemeSupport/palettes/light.palette");
             break;
         }
 
         case Nedrysoft::ThemeSupport::ThemeMode::Dark: {
+            loadPalette(":/Nedrysoft/ThemeSupport/palettes/dark.palette");
+
             break;
         }
     }
@@ -94,4 +98,25 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::The
     Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
 }
 
+auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &filename) -> bool {
+    QFile paletteFile(filename);
+
+    if (!paletteFile.open(QFile::ReadOnly)) {
+        return false;
+    }
+
+    auto paletteBuffer = paletteFile.readAll();
+
+    QDataStream paletteDataStream(paletteBuffer);
+
+    QPalette loadedPalette;
+
+    paletteDataStream >> loadedPalette;
+
+    paletteFile.close();
+
+    qGuiApp->setPalette(loadedPalette);
+
+    return true;
+}
 

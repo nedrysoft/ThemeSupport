@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/Nedrysoft/ThemeSupport">
+        <file>../palettes/dark.palette</file>
+        <file>../palettes/light.palette</file>
+    </qresource>
+</RCC>

@@ -78,6 +78,7 @@ set(Qt_LIBS Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 set(library_SOURCES
     src/ThemeSupport.cpp
     src/ThemeSupport.h
+    src/resources.qrc
 )
 
 if(APPLE)
