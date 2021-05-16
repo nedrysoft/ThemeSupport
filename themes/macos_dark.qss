@@ -29,8 +29,34 @@
 QPushButton {
     background-color: $Button$;
     color: $ButtonText$;
-    border-radius: 4px;
-    padding: 4px;
+
+    padding-left: 6px;
+    padding-top: 3px;
+    padding-right: 6px;
+    padding-bottom: 3px;
     outline: none;
     border: none;
+}
+
+QComboBox {
+    background-color: $Base$;
+}
+
+QLineEdit {
+    border: none;
+    border-bottom: 1px solid #494949;
+}
+
+QHeaderView::section {
+    background-color: $Window$;
+    color: $Text$;
+}
+
+QHeaderView::section::horizontal {
+    border: 1px solid #131313;
+    border-right: 1px solid #BFBFBF;
+}
+
+QHeaderView::section::horizontal::only-one {
+    border: 1px solid #131313;
 }

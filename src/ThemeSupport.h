@@ -28,6 +28,7 @@
 
 #include <QColor>
 #include <QObject>
+#include <QPalette>
 #include <QRgb>
 
 #if ( defined(NEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT))
@@ -41,6 +42,14 @@ namespace Nedrysoft { namespace ThemeSupport {
         System,
         Light,
         Dark
+    };
+
+    enum class ActiveMode {
+        Default,,
+        SystemLight,
+        SystemDark,
+        ForcedLight,
+        ForcedDark
     };
 
     /**
@@ -69,6 +78,28 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @param[in]   mode the mode to set.
              */
             auto setMode(ThemeMode mode) -> void;
+
+            /**
+             * @brief       Returns the active theme.
+             *
+             * @note        The active theme is determined by the OS theme (if available) and the use selected
+             *              theme.  This should be used when drawing controls to ensure that whereever possible
+             *              controls are drawn natively by the OS.
+             *
+             *              If the return value is ForcedLight or ForcedDark then the control must be drawn in the
+             *              appropriate colours by the application, all other colours the OS should be used to draw
+             *              the control.
+             *
+             * @returns     a value from Nedrysoft::Themesupport::ActiveMode.
+             */
+            auto activeMode() -> Nedrysoft::ThemeSupport::ActiveMode;
+
+            /**
+             * @brief       Returns the mode
+             *
+             * @returns     true if dark mode; otherwise false.
+             */
+            static auto isDarkMode(bool *isSystemMode=nullptr) -> bool;
 
             /**
              * @brief       Returns the current OS theme mode.
