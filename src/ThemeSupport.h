@@ -68,7 +68,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @param[in]   mode the mode to set.
              */
-             auto setMode(ThemeMode mode) -> void;
+            auto setMode(ThemeMode mode) -> void;
 
             /**
              * @brief       Returns the current OS theme mode.
@@ -112,7 +112,39 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto loadPalette(const QString &filename) -> bool;
 
+            /**
+             * @brief       Saves a palette to a file.
+             *
+             * @param[in]   filename the filename of the saved palette.
+             *
+             * @returns     true if the palette was saved; otherwise false.
+             */
+            auto savePalette(QString filename) -> bool;
+
         protected:
+            /**
+             * @brief       Returns the map for converting from a color role string to ColorRole.
+             *
+             * @return      a map that contains the lookup.
+             */
+            auto roleMap() -> QMap<QString, QPalette::ColorRole>;
+
+            /**
+             * @brief       Returns the map for converting from a color role string to ColorGroup.
+             *
+             * @return      a map that contains the lookup.
+             */
+            auto groupMap() -> QMap<QString, QPalette::ColorGroup>;
+
+            /**
+             * @brief       Returns the current active operating system theme.
+             *
+             * @param[out]  valid is set to true if the OS supports themes; otherwise false;
+             *
+             * @returns     the theme mode.
+             */
+            static auto systemTheme(bool *valid) -> Nedrysoft::ThemeSupport::ThemeMode;
+
 #if (QT_VERSION_MAJOR>=6)
             /**
              * @brief       Reimplements: QObject::event(QEvent *event).

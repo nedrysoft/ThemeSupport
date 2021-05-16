@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/Nedrysoft/ThemeSupport">
-        <file>../palettes/dark.palette</file>
-        <file>../palettes/light.palette</file>
+        <file>../themes/macos_dark.palette</file>
+        <file>../themes/macos_dark.qss</file>
+        <file>../themes/macos_light.palette</file>
     </qresource>
 </RCC>

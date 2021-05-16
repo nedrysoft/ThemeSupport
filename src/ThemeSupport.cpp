@@ -25,6 +25,7 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QSettings>
 #include <QTextStream>
 #include <QWidget>
 
@@ -82,12 +83,12 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::The
         }
 
         case Nedrysoft::ThemeSupport::ThemeMode::Light: {
-            loadPalette(":/Nedrysoft/ThemeSupport/palettes/light.palette");
+            loadPalette("light");
             break;
         }
 
         case Nedrysoft::ThemeSupport::ThemeMode::Dark: {
-            loadPalette(":/Nedrysoft/ThemeSupport/palettes/dark.palette");
+            loadPalette("dark");
 
             break;
         }
@@ -98,25 +99,129 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::The
     Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &filename) -> bool {
-    QFile paletteFile(filename);
+auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &name) -> bool {
+    QSettings paletteSettings(
+            QString(":/Nedrysoft/ThemeSupport/themes/macos_%1.palette").arg(name),
+            QSettings::IniFormat);
 
-    if (!paletteFile.open(QFile::ReadOnly)) {
-        return false;
+    QFile stylesheetFile(QString(":/Nedrysoft/ThemeSupport/themes/macos_%1.qss").arg(name));
+    QString stylesheet;
+
+    if (stylesheetFile.exists()) {
+        if (stylesheetFile.open(QFile::ReadOnly)) {
+            stylesheet = QString::fromUtf8(stylesheetFile.readAll());
+        }
     }
 
-    auto paletteBuffer = paletteFile.readAll();
+    QPalette palette = qGuiApp->palette();
 
-    QDataStream paletteDataStream(paletteBuffer);
+    QMap<QString, QPalette::ColorGroup> groups = groupMap();
 
-    QPalette loadedPalette;
+    auto roles = roleMap();
 
-    paletteDataStream >> loadedPalette;
+    for (auto group : paletteSettings.childGroups()) {
+        paletteSettings.beginGroup(group);
 
-    paletteFile.close();
+        for (auto key : paletteSettings.allKeys()) {
+            auto colourString = paletteSettings.value(key).toString();
 
-    qGuiApp->setPalette(loadedPalette);
+            palette.setColor(groups[group], roles[key], colourString);
+
+            if (!stylesheet.isEmpty()) {
+                stylesheet = stylesheet.replace("$"+key+"$", colourString);
+            }
+        }
+
+        paletteSettings.endGroup();
+    }
+    
+    qApp->setPalette(palette);
+    qApp->setStyleSheet(stylesheet);
 
     return true;
 }
 
+auto Nedrysoft::ThemeSupport::ThemeSupport::savePalette(QString filename) -> bool {
+    QSettings palette(filename, QSettings::IniFormat);
+
+    QMap<QString, QPalette::ColorGroup> groups = groupMap();
+    QMap<QString, QPalette::ColorRole> roles = roleMap();
+
+    QMapIterator<QString, QPalette::ColorGroup> groupIterator(groups);
+
+    while(groupIterator.hasNext()) {
+        auto group = groupIterator.next();
+
+        QMapIterator<QString, QPalette::ColorRole> roleIterator(roles);
+
+        while(roleIterator.hasNext()) {
+            auto role = roleIterator.next();
+
+            QColor colour = qGuiApp->palette().color(group.value(), role.value());
+
+            QString colourString = QString("#%1%2%3%4")
+                    .arg(colour.alpha(), 2, 16, QLatin1Char('0'))
+                    .arg(colour.red(), 2, 16, QLatin1Char('0'))
+                    .arg(colour.green(), 2, 16, QLatin1Char('0'))
+                    .arg(colour.blue(), 2, 16, QLatin1Char('0'));
+
+            palette.setValue(QString("%1/%2").arg(group.key()).arg(role.key()), colourString);
+        }
+    }
+
+    return true;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::groupMap() -> QMap<QString, QPalette::ColorGroup> {
+    QMap<QString, QPalette::ColorGroup> groups;
+
+    groups["Disabled"] = QPalette::Disabled;
+    groups["Active"] = QPalette::Active;
+    groups["Inactive"] = QPalette::Inactive;
+    groups["Normal"] = QPalette::Normal;
+
+    return groups;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::roleMap() -> QMap<QString, QPalette::ColorRole> {
+    QMap<QString, QPalette::ColorRole> roles;
+
+    roles["Window"] = QPalette::Window;
+    roles["WindowText"] = QPalette::WindowText;
+    roles["Base"] = QPalette::Base;
+    roles["AlternateBase"] = QPalette::AlternateBase;
+    roles["ToolTipBase"] = QPalette::ToolTipBase;
+    roles["ToolTipText"] = QPalette::ToolTipText;
+    roles["PlaceholderText"] = QPalette::PlaceholderText;
+    roles["Text"] = QPalette::Text;
+    roles["Button"] = QPalette::Button;
+    roles["ButtonText"] = QPalette::ButtonText;
+    roles["BrightText"] = QPalette::BrightText;
+
+    roles["Light"] = QPalette::Light;
+    roles["Midlight"] = QPalette::Midlight;
+    roles["Dark"] = QPalette::Dark;
+    roles["Mid"] = QPalette::Mid;
+    roles["Shadow"] = QPalette::Shadow;
+    roles["Highlight"] = QPalette::Highlight;
+    roles["HighlightedText"] = QPalette::HighlightedText;
+
+    roles["Link"] = QPalette::WindowText;
+    roles["LinkVisited"] = QPalette::WindowText;
+
+    return roles;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::activeMode() -> Nedrysoft::ThemeSupport::ActiveMode {
+    Nedrysoft::ThemeSupport::ThemeMode mode;
+    bool isValid;
+
+    mode = systemTheme(&isValid);
+
+    if (!isValid) {
+        if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Light) {
+
+        }
+    }
+
+}
