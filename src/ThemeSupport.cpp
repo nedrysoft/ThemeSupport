@@ -211,17 +211,3 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::roleMap() -> QMap<QString, QPalette:
 
     return roles;
 }
-
-auto Nedrysoft::ThemeSupport::ThemeSupport::activeMode() -> Nedrysoft::ThemeSupport::ActiveMode {
-    Nedrysoft::ThemeSupport::ThemeMode mode;
-    bool isValid;
-
-    mode = systemTheme(&isValid);
-
-    if (!isValid) {
-        if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Light) {
-
-        }
-    }
-
-}

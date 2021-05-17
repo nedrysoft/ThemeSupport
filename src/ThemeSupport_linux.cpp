@@ -25,6 +25,7 @@
 
 #include <QApplication>
 #include <QLibrary>
+#include <QSettings>
 #include <QString>
 #include <QStyle>
 
@@ -40,7 +41,10 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
                 (_g_object_get *) QLibrary::resolve("libgobject-2.0", "g_object_get");
 
         _gtk_settings_get_default *gtk_settings_get_default =
-                (_gtk_settings_get_default *) QLibrary::resolve("libgtk-x11-2.0", "gtk_settings_get_default");
+                (_gtk_settings_get_default *) QLibrary::resolve(
+                        "libgtk-x11-2.0",
+                        "gtk_settings_get_default"
+                );
 
         _g_free *g_free =
                 (_g_free *) QLibrary::resolve("glib-2.0", "g_free");
@@ -84,3 +88,16 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
     return qobject_cast<QApplication *>(QCoreApplication::instance())->style()->standardPalette().color(QPalette::Highlight);
 }
 
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
+    QSettings settings;
+
+    if (settings.value("ThemeSupport/Override", true)) {
+        auto platformTheme = settings.value("ThemeSupport/Environment/QT_QPA_PLATFORMTHEME");
+        auto styleOverride = settings.value("ThemeSupport/Environment/QT_STYLE_OVERRIDE");
+
+        qputenv("QT_QPA_PLATFORMTHEME", platformTheme);
+        qputenv("QT_STYLE_OVERRIDE", styleOverride);
+    }
+
+    return true;
+}

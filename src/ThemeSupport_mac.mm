@@ -63,3 +63,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
 
     return QColor::fromRgbF(color[0], color[1], color[2]);
 }
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
+    return true;
+}
