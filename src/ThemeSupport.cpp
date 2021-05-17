@@ -26,6 +26,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QSettings>
+#include <QStyle>
 #include <QTextStream>
 #include <QWidget>
 
@@ -58,7 +59,7 @@ Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
 auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent *event) -> bool  {
     switch(event->type()) {
         case QEvent::ApplicationPaletteChange: {
-            Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
+            setMode(setMode);
 
             break;
         }
@@ -77,20 +78,25 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) ->
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::ThemeMode mode) -> void {
-    switch(mode) {
-        case Nedrysoft::ThemeSupport::ThemeMode::System: {
-            break;
-        }
+    if ( (systemTheme()==mode) || (mode==Nedrysoft::ThemeSupport::ThemeMode::System) ) {
+        qApp->setPalette(qApp->style()->standardPalette());
+        qApp->setStyleSheet("");
+    } else {
+        switch (mode) {
+            case Nedrysoft::ThemeSupport::ThemeMode::Light: {
+                loadPalette("light");
+                break;
+            }
 
-        case Nedrysoft::ThemeSupport::ThemeMode::Light: {
-            loadPalette("light");
-            break;
-        }
+            case Nedrysoft::ThemeSupport::ThemeMode::Dark: {
+                loadPalette("dark");
 
-        case Nedrysoft::ThemeSupport::ThemeMode::Dark: {
-            loadPalette("dark");
+                break;
+            }
 
-            break;
+            default: {
+                break;
+            }
         }
     }
 

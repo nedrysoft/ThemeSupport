@@ -30,22 +30,15 @@
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
     if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::System) {
-        bool isValid;
-        auto activeTheme = systemTheme(&isValid);
-
-        if (isValid) {
-            return activeTheme==Nedrysoft::ThemeSupport::ThemeMode::Dark;
-        }
-
-        return false;
+        return systemTheme()==Nedrysoft::ThemeSupport::ThemeMode::Dark;
     }
 
     return m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Dark;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *valid) -> Nedrysoft::ThemeSupport::ThemeMode {
-    if (valid) {
-        *valid = false;
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::ThemeMode {
+    if (osSupportsThemes) {
+        *osSupportsThemes = false;
     }
 
     if (@available(macOS 10.14, *)) {
@@ -65,8 +58,8 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *valid) -> Nedrysof
                 NSAppearanceNameDarkAqua
         ]];
 
-        if (valid) {
-            *valid = true;
+        if (osSupportsThemes) {
+            *osSupportsThemes = true;
         }
 
         if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua] == YES) {

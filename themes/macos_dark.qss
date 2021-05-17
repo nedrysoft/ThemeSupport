@@ -30,12 +30,21 @@ QPushButton {
     background-color: $Button$;
     color: $ButtonText$;
 
+    border-radius: 6px;
     padding-left: 6px;
     padding-top: 3px;
     padding-right: 6px;
     padding-bottom: 3px;
     outline: none;
     border: none;
+}
+
+QMenu::item {
+    color: $Text$;
+}
+
+QMenu::item::disabled {
+    color: #757578;
 }
 
 QComboBox {

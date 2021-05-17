@@ -31,42 +31,12 @@
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
     if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::System) {
-        typedef void *(_gtk_settings_get_default)();
-        typedef void *(_g_object_get)(void *, const char *, ...);
-        typedef void (_g_free)(void *);
+        bool osSupportsThemes;
 
-        // try to load libgtk and get settings, if we are running under a gtk then the settings can be read.
+        auto osTheme = systemTheme(&osSupportsThemes);
 
-        _g_object_get *g_object_get =
-                (_g_object_get *) QLibrary::resolve("libgobject-2.0", "g_object_get");
-
-        _gtk_settings_get_default *gtk_settings_get_default =
-                (_gtk_settings_get_default *) QLibrary::resolve(
-                        "libgtk-x11-2.0",
-                        "gtk_settings_get_default"
-                );
-
-        _g_free *g_free =
-                (_g_free *) QLibrary::resolve("glib-2.0", "g_free");
-
-        if (( g_object_get ) && ( gtk_settings_get_default ) && ( g_free )) {
-            void *settings = gtk_settings_get_default();
-
-            if (settings) {
-                char *propertyValue = nullptr;
-
-                g_object_get(settings, "gtk-theme-name", &propertyValue, nullptr);
-
-                if (propertyValue) {
-                    QString resultString = QString::fromUtf8(propertyValue);
-
-                    g_free(propertyValue);
-
-                    if (resultString.endsWith("-dark", Qt::CaseInsensitive)) {
-                        return true;
-                    }
-                }
-            }
+        if (osSupportsThemes) {
+            return osTheme==Nedrysoft::ThemeSupport::ThemeMode::Dark;
         }
 
         // fallback, we compare the lightness of the text colour to the window background colour
@@ -100,4 +70,56 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
     }
 
     return true;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::ThemeMode {
+    typedef void *(_gtk_settings_get_default)();
+    typedef void *(_g_object_get)(void *, const char *, ...);
+    typedef void (_g_free)(void *);
+
+    // try to load libgtk and get settings, if we are running under a gtk then the settings can be read.
+
+    _g_object_get *g_object_get =
+            (_g_object_get *) QLibrary::resolve("libgobject-2.0", "g_object_get");
+
+    _gtk_settings_get_default *gtk_settings_get_default =
+            (_gtk_settings_get_default *) QLibrary::resolve(
+                    "libgtk-x11-2.0",
+                    "gtk_settings_get_default"
+            );
+
+    _g_free *g_free =
+            (_g_free *) QLibrary::resolve("glib-2.0", "g_free");
+
+    if (( g_object_get ) && ( gtk_settings_get_default ) && ( g_free )) {
+        void *settings = gtk_settings_get_default();
+
+        if (settings) {
+            char *propertyValue = nullptr;
+
+            g_object_get(settings, "gtk-theme-name", &propertyValue, nullptr);
+
+            if (propertyValue) {
+                QString resultString = QString::fromUtf8(propertyValue);
+
+                g_free(propertyValue);
+
+                if (*osSupportsThemes) {
+                    *osSupportsThemes = true;
+                }
+
+                if (resultString.endsWith("-dark", Qt::CaseInsensitive)) {
+                    return Nedrysoft::ThemeSupport::ThemeMode::Dark;
+                }
+
+                return Nedrysoft::ThemeSupport::ThemeMode::Light;
+            }
+        }
+    }
+
+    if (*osSupportsThemes) {
+        *osSupportsThemes = false;
+    }
+
+    return Nedrysoft::ThemeSupport::ThemeMode::Light;
 }

@@ -46,14 +46,6 @@ namespace Nedrysoft { namespace ThemeSupport {
         Dark
     };
 
-    enum class ActiveMode {
-        Default,,
-        SystemLight,
-        SystemDark,
-        ForcedLight,
-        ForcedDark
-    };
-
     /**
      * @brief       The ThemeSupport class provides information about the operating system theme.
      *
@@ -84,29 +76,7 @@ namespace Nedrysoft { namespace ThemeSupport {
             auto setMode(ThemeMode mode) -> void;
 
             /**
-             * @brief       Returns the active theme.
-             *
-             * @note        The active theme is determined by the OS theme (if available) and the use selected
-             *              theme.  This should be used when drawing controls to ensure that whereever possible
-             *              controls are drawn natively by the OS.
-             *
-             *              If the return value is ForcedLight or ForcedDark then the control must be drawn in the
-             *              appropriate colours by the application, all other colours the OS should be used to draw
-             *              the control.
-             *
-             * @returns     a value from Nedrysoft::Themesupport::ActiveMode.
-             */
-            auto activeMode() -> Nedrysoft::ThemeSupport::ActiveMode;
-
-            /**
-             * @brief       Returns the mode
-             *
-             * @returns     true if dark mode; otherwise false.
-             */
-            static auto isDarkMode(bool *isSystemMode=nullptr) -> bool;
-
-            /**
-             * @brief       Returns the current OS theme mode.
+             * @brief       Returns whether the OS is in dark mode.
              *
              * @returns     true if dark mode; otherwise false.
              */
@@ -188,6 +158,16 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @return      a map that contains the lookup.
              */
             auto groupMap() -> QMap<QString, QPalette::ColorGroup>;
+
+            /**
+             * @brief       Returns the current selected theme if OS supports light/dark mode.
+             *
+             * @param[out]  osSupportsThemes if provided, this parameter will be set to true if the operating
+             *              system supports light/dark mode; otherwise false.
+             *
+             * @returns     the system theme.
+             */
+            static auto systemTheme(bool *osSupportsThemes=nullptr) -> Nedrysoft::ThemeSupport::ThemeMode;
 
 #if (QT_VERSION_MAJOR>=6)
             /**
