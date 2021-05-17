@@ -29,18 +29,14 @@
 #import <AppKit/NSColor.h>
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
-    if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::System) {
-        return systemTheme()==Nedrysoft::ThemeSupport::ThemeMode::Dark;
+    if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
+        return systemMode()==Nedrysoft::ThemeSupport::SystemMode::Dark;
     }
 
-    return m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Dark;
+    return m_activeTheme==Nedrysoft::ThemeSupport::Theme::Dark;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::ThemeMode {
-    if (osSupportsThemes) {
-        *osSupportsThemes = false;
-    }
-
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupport::SystemMode {
     if (@available(macOS 10.14, *)) {
         NSAppearance *appearance = nullptr;
 
@@ -58,16 +54,14 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) 
                 NSAppearanceNameDarkAqua
         ]];
 
-        if (osSupportsThemes) {
-            *osSupportsThemes = true;
+        if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua] == YES) {
+            return Nedrysoft::ThemeSupport::SystemMode::Dark;
         }
 
-        if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua] == YES) {
-            return Nedrysoft::ThemeSupport::ThemeMode::Dark;
-        }
+        return Nedrysoft::ThemeSupport::SystemMode::Light;
     }
 
-    return Nedrysoft::ThemeSupport::ThemeMode::Light;
+    return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor {

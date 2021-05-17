@@ -40,8 +40,14 @@
 namespace Nedrysoft { namespace ThemeSupport {
     class ThemeSupportConfigurationWidget;
 
-    enum class ThemeMode {
+    enum class Theme {
         System,
+        Light,
+        Dark
+    };
+
+    enum class SystemMode {
+        Unsupported,
         Light,
         Dark
     };
@@ -69,11 +75,11 @@ namespace Nedrysoft { namespace ThemeSupport {
             ~ThemeSupport();
 
             /**
-             * @brief       Sets the application theme mode.
+             * @brief       Sets the active application theme.
              *
-             * @param[in]   mode the mode to set.
+             * @param[in]   mode the to set as active.
              */
-            auto setMode(ThemeMode mode) -> void;
+            auto selectActive(Theme theme) -> void;
 
             /**
              * @brief       Returns whether the OS is in dark mode.
@@ -144,6 +150,23 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             static auto configurationWidget() -> Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget *;
 
+            /**
+             * @brief       Returns the current selected mode if OS supports light/dark mode.
+             *
+             * @returns     returns the currently active system mode, if the OS does not support light/dark modes then
+             *              this function will return Nedrysoft::ThemeSupport::SystemMode::Unsupported.
+             */
+            static auto systemMode() -> Nedrysoft::ThemeSupport::SystemMode;
+
+            /**
+             * @brief       Returns whether the currently selected theme is forced.
+             *
+             * @note        This implements the logic to deal with system mode light/dark themes.
+             *
+             * @returns     true if the selected theme is forced; otherwise false.
+             */
+            static auto isForced() -> bool;
+
         protected:
             /**
              * @brief       Returns the map for converting from a color role string to ColorRole.
@@ -159,16 +182,6 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto groupMap() -> QMap<QString, QPalette::ColorGroup>;
 
-            /**
-             * @brief       Returns the current selected theme if OS supports light/dark mode.
-             *
-             * @param[out]  osSupportsThemes if provided, this parameter will be set to true if the operating
-             *              system supports light/dark mode; otherwise false.
-             *
-             * @returns     the system theme.
-             */
-            static auto systemTheme(bool *osSupportsThemes=nullptr) -> Nedrysoft::ThemeSupport::ThemeMode;
-
 #if (QT_VERSION_MAJOR>=6)
             /**
              * @brief       Reimplements: QObject::event(QEvent *event).
@@ -182,7 +195,7 @@ namespace Nedrysoft { namespace ThemeSupport {
         private:
             //! @cond
 
-            static ThemeMode m_themeMode;
+            static Theme m_activeTheme;
             static QWidget *m_eventProxyWidget;
 
             //! @endcond

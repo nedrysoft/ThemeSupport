@@ -31,9 +31,9 @@ QPushButton {
     color: $ButtonText$;
 
     border-radius: 6px;
-    padding-left: 6px;
+    padding-left: 12px;
     padding-top: 3px;
-    padding-right: 6px;
+    padding-right: 12px;
     padding-bottom: 3px;
     outline: none;
     border: none;
@@ -62,10 +62,10 @@ QHeaderView::section {
 }
 
 QHeaderView::section::horizontal {
-    border: 1px solid #131313;
+    border: 0px;
     border-right: 1px solid #BFBFBF;
 }
 
 QHeaderView::section::horizontal::only-one {
-    border: 1px solid #131313;
+    border: 0px;
 }

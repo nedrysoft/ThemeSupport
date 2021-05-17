@@ -38,10 +38,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
     return true;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::ThemeMode {
-    if (osSupportsThemes) {
-        *osSupportsThemes = false;
-    }
-
-    return m_themeMode;
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::SystemMode {
+    return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
 }

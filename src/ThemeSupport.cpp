@@ -32,8 +32,8 @@
 
 //! @cond
 
-Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
-        Nedrysoft::ThemeSupport::ThemeMode::System;
+Nedrysoft::ThemeSupport::Theme Nedrysoft::ThemeSupport::ThemeSupport::m_activeTheme =
+        Nedrysoft::ThemeSupport::Theme::System;
 
 //! @endcond
 
@@ -48,7 +48,7 @@ Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
 
     eventProxyWidget->installEventFilter(this);
 
-    setMode(m_themeMode);
+    selectActive(m_activeTheme);
 }
 
 Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
@@ -77,30 +77,59 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) ->
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::ThemeMode mode) -> void {
-    if ( (systemTheme()==mode) || (mode==Nedrysoft::ThemeSupport::ThemeMode::System) ) {
-        qApp->setPalette(qApp->style()->standardPalette());
-        qApp->setStyleSheet("");
+auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport::Theme theme) -> void {
+    auto activeMode = systemMode();
+    bool clearTheme = false;
+    bool forceTheme = false;
+
+    if (theme==Nedrysoft::ThemeSupport::Theme::System) {
+        clearTheme = true;
     } else {
-        switch (mode) {
-            case Nedrysoft::ThemeSupport::ThemeMode::Light: {
-                loadPalette("light");
-                break;
-            }
-
-            case Nedrysoft::ThemeSupport::ThemeMode::Dark: {
-                loadPalette("dark");
+        switch(activeMode) {
+            case Nedrysoft::ThemeSupport::SystemMode::Unsupported: {
+                if (theme==Nedrysoft::ThemeSupport::Theme::Dark) {
+                    forceTheme = true;
+                }
 
                 break;
             }
 
-            default: {
+            case Nedrysoft::ThemeSupport::SystemMode::Light: {
+                if (theme==Nedrysoft::ThemeSupport::Theme::Light) {
+                    clearTheme = true;
+                } else {
+                    forceTheme = true;
+                }
+
+                break;
+            }
+
+            case Nedrysoft::ThemeSupport::SystemMode::Dark: {
+                if (theme==Nedrysoft::ThemeSupport::Theme::Dark) {
+                    clearTheme = true;
+                } else {
+                    forceTheme = true;
+                }
+
                 break;
             }
         }
     }
 
-    m_themeMode = mode;
+    if (clearTheme) {
+        qApp->setPalette(qApp->style()->standardPalette());
+        qApp->setStyleSheet("");
+    }
+
+    if (forceTheme) {
+        if (theme==Nedrysoft::ThemeSupport::Theme::Light) {
+            loadPalette("light");
+        } else {
+            loadPalette("dark");
+        }
+    }
+
+    m_activeTheme = theme;
 
     Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
 }
@@ -216,4 +245,24 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::roleMap() -> QMap<QString, QPalette:
     roles["LinkVisited"] = QPalette::WindowText;
 
     return roles;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::isForced() -> bool {
+    if (systemMode()==Nedrysoft::ThemeSupport::SystemMode::Unsupported) {
+        if (Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()) {
+            return true;
+        }
+    } else {
+        if (systemMode() == Nedrysoft::ThemeSupport::SystemMode::Dark) {
+            if (!Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()) {
+                return true;
+            }
+        } else {
+            if (Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }

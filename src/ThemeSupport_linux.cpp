@@ -30,13 +30,11 @@
 #include <QStyle>
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
-    if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::System) {
-        bool osSupportsThemes;
+    if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
+        auto systemMode = systemMode();
 
-        auto osTheme = systemTheme(&osSupportsThemes);
-
-        if (osSupportsThemes) {
-            return osTheme==Nedrysoft::ThemeSupport::ThemeMode::Dark;
+        if (systemMode) {
+            return systemMode==Nedrysoft::ThemeSupport::SystemMode::Dark;
         }
 
         // fallback, we compare the lightness of the text colour to the window background colour
@@ -51,7 +49,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
         return false;
     }
 
-    return m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Dark;
+    return m_activeTheme==Nedrysoft::ThemeSupport::Theme::Dark;
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor {
@@ -72,7 +70,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
     return true;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::ThemeMode {
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupport::SystemMode {
     typedef void *(_gtk_settings_get_default)();
     typedef void *(_g_object_get)(void *, const char *, ...);
     typedef void (_g_free)(void *);
@@ -109,17 +107,13 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::systemTheme(bool *osSupportsThemes) 
                 }
 
                 if (resultString.endsWith("-dark", Qt::CaseInsensitive)) {
-                    return Nedrysoft::ThemeSupport::ThemeMode::Dark;
+                    return Nedrysoft::ThemeSupport::SystemMode::Dark;
                 }
 
-                return Nedrysoft::ThemeSupport::ThemeMode::Light;
+                return Nedrysoft::ThemeSupport::SystemMode::Light;
             }
         }
     }
 
-    if (*osSupportsThemes) {
-        *osSupportsThemes = false;
-    }
-
-    return Nedrysoft::ThemeSupport::ThemeMode::Light;
+    return Nedrysoft::ThemeSupport::SystemMode::Light;
 }
