@@ -38,6 +38,8 @@
 #endif
 
 namespace Nedrysoft { namespace ThemeSupport {
+    class ThemeSupportConfigurationWidget;
+
     enum class ThemeMode {
         System,
         Light,
@@ -54,6 +56,8 @@ namespace Nedrysoft { namespace ThemeSupport {
 
     /**
      * @brief       The ThemeSupport class provides information about the operating system theme.
+     *
+     * @class       Nedrysoft::ThemeSupport::ThemeSupport ThemeSupport.h <ThemeSupport>
      */
     class NEDRYSOFT_THEMESUPPORT_DLLSPEC ThemeSupport :
             public QObject {
@@ -152,6 +156,24 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto savePalette(QString filename) -> bool;
 
+            /**
+             * @brief       Initialise the theme.
+             *
+             * @note        This function should be called as early as possible in the application to initialise
+             *              the theming.  This may be an empty function depending on the platform and the specific
+             *              mechanisms used to switch between light and dark mode.
+             *
+             * @returns     true if the platform was initialised ok; otherwise false.
+             */
+            static auto initialise() -> bool;
+
+            /**
+             * @brief       Returns a configuration widget that the application can use.
+             *
+             * @returns     the configuration widget (the widget is owned by the caller)
+             */
+            static auto configurationWidget() -> Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget *;
+
         protected:
             /**
              * @brief       Returns the map for converting from a color role string to ColorRole.
@@ -166,15 +188,6 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @return      a map that contains the lookup.
              */
             auto groupMap() -> QMap<QString, QPalette::ColorGroup>;
-
-            /**
-             * @brief       Returns the current active operating system theme.
-             *
-             * @param[out]  valid is set to true if the OS supports themes; otherwise false;
-             *
-             * @returns     the theme mode.
-             */
-            static auto systemTheme(bool *valid) -> Nedrysoft::ThemeSupport::ThemeMode;
 
 #if (QT_VERSION_MAJOR>=6)
             /**
