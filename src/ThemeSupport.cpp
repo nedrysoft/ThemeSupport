@@ -93,7 +93,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) -> QColor {
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
-#include <QDebug>
+
 auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport::Theme theme) -> void {
     auto activeMode = systemMode();
     bool clearTheme = false;
@@ -149,8 +149,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport
     }
 
     m_activeTheme = theme;
-
-    qDebug() << clearTheme << forceTheme << "emitting themeChanged" << Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode();
 
     Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
 }

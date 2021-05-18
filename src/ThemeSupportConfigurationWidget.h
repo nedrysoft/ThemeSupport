@@ -57,6 +57,23 @@ namespace Nedrysoft { namespace ThemeSupport {
             ~ThemeSupportConfigurationWidget() override;
 
             /**
+             * @brief       Initialises the settings widget.
+             *
+             * @returns     true if initialised; otherwise false.
+             */
+            auto initialise() -> bool;
+
+            /**
+             * @brief       Returns whether the current settings can be applied.
+             *
+             * @note        On macOS, there is no concept of whether settings can be applied, as a setting is changed
+             *              it is immediately applied.
+             *
+             * @returns     true if the settings are valid; otherwise false.
+             */
+            auto canAcceptSettings() -> bool;
+
+            /**
              * @brief       Applies the current settings.
              *
              * @returns     true if the settings were applied (saved); otherwise false.

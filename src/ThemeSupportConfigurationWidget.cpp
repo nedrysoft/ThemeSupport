@@ -68,3 +68,10 @@ auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::acceptSettings() 
     return true;
 }
 
+auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::canAcceptSettings() -> bool {
+    return true;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::initialise() -> bool {
+    return true;
+}
