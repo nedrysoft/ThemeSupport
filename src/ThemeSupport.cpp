@@ -25,10 +25,21 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QStyle>
 #include <QTextStream>
 #include <QWidget>
+
+#if defined(Q_OS_MACOS)
+constexpr auto HostPlatform = "macos";
+#elif defined(Q_OS_WINDOWS)
+constexpr auto HostPlatform = "windows";
+#elif defined(Q_OS_LINUX)
+constexpr auto HostPlatform = "linux";
+#else
+#error Unknown platform!
+#endif
 
 //! @cond
 
@@ -55,6 +66,12 @@ Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
 
 }
 
+auto Nedrysoft::ThemeSupport::ThemeSupport::getInstance() -> Nedrysoft::ThemeSupport::ThemeSupport * {
+    static Nedrysoft::ThemeSupport::ThemeSupport themeSupport;
+
+    return &themeSupport;
+}
+
 #if (QT_VERSION_MAJOR>=6)
 auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent *event) -> bool  {
     switch(event->type()) {
@@ -76,7 +93,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) -> QColor {
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
-
+#include <QDebug>
 auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport::Theme theme) -> void {
     auto activeMode = systemMode();
     bool clearTheme = false;
@@ -117,8 +134,10 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport
     }
 
     if (clearTheme) {
+        qApp->blockSignals(true);
         qApp->setPalette(qApp->style()->standardPalette());
         qApp->setStyleSheet("");
+        qApp->blockSignals(false);
     }
 
     if (forceTheme) {
@@ -131,47 +150,66 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport
 
     m_activeTheme = theme;
 
+    qDebug() << clearTheme << forceTheme << "emitting themeChanged" << Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode();
+
     Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &name) -> bool {
-    QSettings paletteSettings(
-            QString(":/Nedrysoft/ThemeSupport/themes/macos_%1.palette").arg(name),
-            QSettings::IniFormat);
-
-    QFile stylesheetFile(QString(":/Nedrysoft/ThemeSupport/themes/macos_%1.qss").arg(name));
+    QString paletteFilename(QString(":/Nedrysoft/ThemeSupport/themes/%1_%2.palette").arg(HostPlatform, name));
+    QString stylesheetFilename(QString(":/Nedrysoft/ThemeSupport/themes/%1_%2.qss").arg(HostPlatform, name));
+    QSettings *paletteSettings = nullptr;
     QString stylesheet;
 
-    if (stylesheetFile.exists()) {
+    if (QFile::exists(paletteFilename)) {
+        paletteSettings = new QSettings(paletteFilename, QSettings::IniFormat);
+    }
+
+    if (QFile::exists(stylesheetFilename)) {
+         QFile stylesheetFile(stylesheetFilename);
+
         if (stylesheetFile.open(QFile::ReadOnly)) {
             stylesheet = QString::fromUtf8(stylesheetFile.readAll());
         }
-    }
+     }
 
     QPalette palette = qGuiApp->palette();
 
-    QMap<QString, QPalette::ColorGroup> groups = groupMap();
+    if (paletteSettings) {
+        QMap<QString, QPalette::ColorGroup> groups = groupMap();
 
-    auto roles = roleMap();
+        auto roles = roleMap();
 
-    for (auto group : paletteSettings.childGroups()) {
-        paletteSettings.beginGroup(group);
+        for (auto group : paletteSettings->childGroups()) {
+            paletteSettings->beginGroup(group);
 
-        for (auto key : paletteSettings.allKeys()) {
-            auto colourString = paletteSettings.value(key).toString();
+            for (auto key : paletteSettings->allKeys()) {
+                auto colourString = paletteSettings->value(key).toString();
 
-            palette.setColor(groups[group], roles[key], colourString);
+                palette.setColor(groups[group], roles[key], colourString);
 
-            if (!stylesheet.isEmpty()) {
-                stylesheet = stylesheet.replace("$"+key+"$", colourString);
+                if (!stylesheet.isEmpty()) {
+                    auto fullRegex = QRegularExpression(
+                            QString("\\/\\*\\s*%1\\s*\\*\\/").arg(key + "." + group));
+
+                    auto keyRegex = QRegularExpression(
+                            QString("\\/\\*\\s*%1\\s*\\*\\/").arg(key));
+
+                    stylesheet = stylesheet.replace(fullRegex, colourString);
+                    stylesheet = stylesheet.replace(keyRegex, colourString);
+                }
             }
+
+            paletteSettings->endGroup();
         }
 
-        paletteSettings.endGroup();
+        delete paletteSettings;
     }
-    
+
+    qApp->blockSignals(true);
     qApp->setPalette(palette);
     qApp->setStyleSheet(stylesheet);
+    qApp->blockSignals(false);
 
     return true;
 }

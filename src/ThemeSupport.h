@@ -63,12 +63,13 @@ namespace Nedrysoft { namespace ThemeSupport {
         public:
             Q_OBJECT
 
-        public:
+        private:
             /**
              * @brief       Constructs a new ThemeSupport instance.
              */
             explicit ThemeSupport();
 
+        public:
             /**
              * @brief       Destroys the ThemeSupport.
              */
@@ -86,7 +87,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     true if dark mode; otherwise false.
              */
-            static auto isDarkMode() -> bool;
+            auto isDarkMode() -> bool;
 
             /**
              * @brief       This signal is emitted when OS theme is changed.
@@ -102,7 +103,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     the colour.
              */
-            static auto getColor(const QRgb PushButtonColor[]) -> QColor;
+            auto getColor(const QRgb PushButtonColor[]) -> QColor;
 
             /**
              * @brief       Returns the highlighted text background color
@@ -112,7 +113,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     the colour
              */
-            static auto getHighlightedBackground() -> QColor;
+            auto getHighlightedBackground() -> QColor;
 
             /**
              * @brief       Loads a saved palette.
@@ -148,7 +149,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     the configuration widget (the widget is owned by the caller)
              */
-            static auto configurationWidget() -> Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget *;
+            auto configurationWidget() -> Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget *;
 
             /**
              * @brief       Returns the current selected mode if OS supports light/dark mode.
@@ -156,7 +157,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @returns     returns the currently active system mode, if the OS does not support light/dark modes then
              *              this function will return Nedrysoft::ThemeSupport::SystemMode::Unsupported.
              */
-            static auto systemMode() -> Nedrysoft::ThemeSupport::SystemMode;
+            auto systemMode() -> Nedrysoft::ThemeSupport::SystemMode;
 
             /**
              * @brief       Returns whether the currently selected theme is forced.
@@ -165,7 +166,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     true if the selected theme is forced; otherwise false.
              */
-            static auto isForced() -> bool;
+            auto isForced() -> bool;
 
             /**
              * @brief       Initialises the saved state for the platform specific configuration.
@@ -173,6 +174,13 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @returns     true if the configuration was restored; otherwise false.
              */
             auto initialisePlatform() -> bool;
+
+            /**
+             * @brief       Returns the singleton instance to the ThemeSupport object.
+             *
+             * @returns     the singleton instance
+             */
+            static auto getInstance() -> Nedrysoft::ThemeSupport::ThemeSupport *;
 
         protected:
             /**

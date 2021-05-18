@@ -43,30 +43,17 @@ Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurat
     ui->themeComboBox->addItem("Dark", QVariant::fromValue(Nedrysoft::ThemeSupport::Theme::Dark));
     ui->themeComboBox->addItem("Light", QVariant::fromValue(Nedrysoft::ThemeSupport::Theme::Light));
 
-    auto platformTheme = settings.value(
-            "ThemeSupport/Theme",
-            defaultValue).value<Nedrysoft::ThemeSupport::Theme>();
+    connect(ui->themeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index) {
+        auto theme = ui->themeComboBox->itemData(index, Qt::UserRole).value<Nedrysoft::ThemeSupport::Theme>();
 
-    QString activeTheme;
+        auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
-    switch(platformTheme) {
-        case Nedrysoft::ThemeSupport::Theme::System: {
-            activeTheme = "System";
-            break;
-        }
+        themeSupport->selectActive(theme);
+    });
 
-        case Nedrysoft::ThemeSupport::Theme::Light: {
-            activeTheme = "Light";
-            break;
-        }
+    auto platformTheme = settings.value("ThemeSupport/Theme","System").toString();
 
-        case Nedrysoft::ThemeSupport::Theme::Dark: {
-            activeTheme = "Dark";
-            break;
-        }
-    }
-
-    ui->themeComboBox->setCurrentText(activeTheme);
+    ui->themeComboBox->setCurrentText(platformTheme);
 }
 
 Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::~ThemeSupportConfigurationWidget() {
