@@ -76,9 +76,9 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 set(Qt_LIBS Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 
 set(library_SOURCES
-    src/ConfigurationWidget.cpp
-    src/ConfigurationWidget.h
-    src/ConfigurationWidget.ui
+    src/ThemeSupportConfigurationWidget.cpp
+    src/ThemeSupportConfigurationWidget.h
+    src/ThemeSupportConfigurationWidget.ui
     src/ThemeSupport.cpp
     src/ThemeSupport.h
     src/resources.qrc

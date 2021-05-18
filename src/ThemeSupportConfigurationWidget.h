@@ -61,7 +61,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     true if the settings were applied (saved); otherwise false.
              */
-            auto applyConfiguration() -> bool;
+            auto acceptSettings() -> bool;
 
         private:
             //! @cond

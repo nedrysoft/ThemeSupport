@@ -266,3 +266,22 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::isForced() -> bool {
 
     return false;
 }
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
+    QSettings settings;
+    auto activeTheme = Nedrysoft::ThemeSupport::Theme::System;
+
+    auto platformTheme = settings.value(
+            "ThemeSupport/Theme",
+            "System").toString();
+
+    if (platformTheme=="Dark") {
+        activeTheme = Nedrysoft::ThemeSupport::Theme::Dark;
+    } else if (platformTheme=="Light") {
+        activeTheme = Nedrysoft::ThemeSupport::Theme::Light;
+    }
+
+    selectActive(activeTheme);
+
+    return initialisePlatform();
+}

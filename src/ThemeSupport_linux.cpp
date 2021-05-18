@@ -56,7 +56,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
     return qobject_cast<QApplication *>(QCoreApplication::instance())->style()->standardPalette().color(QPalette::Highlight);
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform() -> bool {
     QSettings settings;
 
     if (settings.value("ThemeSupport/Override", true)) {

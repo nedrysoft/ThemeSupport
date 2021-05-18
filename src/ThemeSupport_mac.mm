@@ -23,7 +23,7 @@
 
 #include "ThemeSupport.h"
 
-#include <QStyle>
+#include <QSettings>
 
 #import <AppKit/NSAppearance.h>
 #import <AppKit/NSColor.h>
@@ -72,6 +72,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
     return QColor::fromRgbF(color[0], color[1], color[2]);
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform() -> bool {
     return true;
 }

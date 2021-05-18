@@ -141,7 +141,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     true if the platform was initialised ok; otherwise false.
              */
-            static auto initialise() -> bool;
+            auto initialise() -> bool;
 
             /**
              * @brief       Returns a configuration widget that the application can use.
@@ -166,6 +166,13 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @returns     true if the selected theme is forced; otherwise false.
              */
             static auto isForced() -> bool;
+
+            /**
+             * @brief       Initialises the saved state for the platform specific configuration.
+             *
+             * @returns     true if the configuration was restored; otherwise false.
+             */
+            auto initialisePlatform() -> bool;
 
         protected:
             /**
@@ -201,5 +208,8 @@ namespace Nedrysoft { namespace ThemeSupport {
             //! @endcond
     };
 }}
+
+Q_DECLARE_METATYPE(Nedrysoft::ThemeSupport::SystemMode)
+Q_DECLARE_METATYPE(Nedrysoft::ThemeSupport::Theme)
 
 #endif // NEDRYSOFT_THEMESUPPORT_THEMESUPPORT_H

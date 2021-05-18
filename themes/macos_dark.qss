@@ -51,6 +51,13 @@ QComboBox {
     background-color: $Base$;
 }
 
+QComboBox::item {
+    color: $Text$;
+}
+
+QComboBox::item::disabled {
+    color: #757578;
+}
 QLineEdit {
     border: none;
     border-bottom: 1px solid #494949;
