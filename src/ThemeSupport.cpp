@@ -274,7 +274,9 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::roleMap() -> QMap<QString, QPalette:
     roles["AlternateBase"] = QPalette::AlternateBase;
     roles["ToolTipBase"] = QPalette::ToolTipBase;
     roles["ToolTipText"] = QPalette::ToolTipText;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12,0))
     roles["PlaceholderText"] = QPalette::PlaceholderText;
+#endif
     roles["Text"] = QPalette::Text;
     roles["Button"] = QPalette::Button;
     roles["ButtonText"] = QPalette::ButtonText;

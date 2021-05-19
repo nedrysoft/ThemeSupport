@@ -31,10 +31,10 @@
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
     if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
-        auto systemMode = systemMode();
+        auto currentSystemMode = systemMode();
 
-        if (systemMode!-Nedrysoft::ThemeSupport::SystemMode::Unsupported) {
-            return systemMode==Nedrysoft::ThemeSupport::SystemMode::Dark;
+        if (currentSystemMode!=Nedrysoft::ThemeSupport::SystemMode::Unsupported) {
+            return currentSystemMode==Nedrysoft::ThemeSupport::SystemMode::Dark;
         }
 
         // fallback, we compare the lightness of the text colour to the window background colour
@@ -59,12 +59,12 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
 auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform() -> bool {
     QSettings settings;
 
-    if (settings.value("ThemeSupport/Override", true)) {
+    if (settings.value("ThemeSupport/Override", false).toBool()) {
         auto platformTheme = settings.value("ThemeSupport/Environment/QT_QPA_PLATFORMTHEME");
         auto styleOverride = settings.value("ThemeSupport/Environment/QT_STYLE_OVERRIDE");
 
-        qputenv("QT_QPA_PLATFORMTHEME", platformTheme);
-        qputenv("QT_STYLE_OVERRIDE", styleOverride);
+        qputenv("QT_QPA_PLATFORMTHEME", platformTheme.toByteArray());
+        qputenv("QT_STYLE_OVERRIDE", styleOverride.toByteArray());
     }
 
     return true;
@@ -101,10 +101,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupp
                 QString resultString = QString::fromUtf8(propertyValue);
 
                 g_free(propertyValue);
-
-                if (*osSupportsThemes) {
-                    *osSupportsThemes = true;
-                }
 
                 if (resultString.endsWith("-dark", Qt::CaseInsensitive)) {
                     return Nedrysoft::ThemeSupport::SystemMode::Dark;

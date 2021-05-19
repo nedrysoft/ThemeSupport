@@ -1,0 +1,105 @@
+/*
+ * Copyright (C) 2021 Adrian Carpenter
+ *
+ * This file is part of Pingnoo (https://github.com/nedrysoft/pingnoo)
+ *
+ * An open-source cross-platform traceroute analyser.
+ *
+ * Created by Adrian Carpenter on 16/05/2021.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * It may not be enough to just set the palette for forcing a theme, we may also need to set up a stylesheet which
+ * further modifies the styles on an element by element basis.
+ */
+
+QPushButton {
+    background-color: /*Button.Normal*/;
+    color: /*ButtonText.Active*/;
+
+    padding-left: 12px;
+    padding-top: 3px;
+    padding-right: 12px;
+    padding-bottom: 3px;
+    outline: none;
+    border: none;
+}
+
+QMenu::item {
+    color: /*Text*/;
+}
+
+QMenu::item:disabled {
+    color: #757578;
+}
+
+QComboBox {
+    background-color: /*Base*/;
+}
+
+QComboBox::item {
+    color: /*Text.Active*/;
+}
+
+QComboBox::item:disabled {
+    color: #757578;
+}
+
+QComboBox::drop-down {
+    color: white;
+    background: #303030;
+}
+
+QLineEdit {
+    border: none;
+    border-bottom: 1px solid #494949;
+}
+
+QHeaderView::section {
+    background-color: /*Window*/;
+    color: /*Text*/;
+}
+
+QHeaderView::section:horizontal {
+    border: 0px;
+    border-right: 1px solid #BFBFBF;
+}
+
+QHeaderView::section:horizontal:only-one {
+    border: 0px;
+}
+
+QMenu {
+    background:#191819;
+}
+
+QMenu::item::selected {
+    background:#303030;
+}
+
+QMenu::item::selected:disabled {
+    background: none;
+}
+
+QMenuBar {
+    background: /*Window.Normal*/;
+    color: /*WindowText.Normal*/;
+}
+
+QMenuBar::item:selected {
+    background:#191819;
+}
+
