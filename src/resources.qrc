@@ -3,5 +3,9 @@
         <file>../themes/macos_dark.palette</file>
         <file>../themes/macos_dark.qss</file>
         <file>../themes/macos_light.palette</file>
+
+        <file>../themes/windows_dark.palette</file>
+        <file>../themes/windows_dark.qss</file>
+        <file>../themes/windows_light.palette</file>
     </qresource>
 </RCC>

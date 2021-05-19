@@ -33,7 +33,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
     if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
         auto systemMode = systemMode();
 
-        if (systemMode) {
+        if (systemMode!-Nedrysoft::ThemeSupport::SystemMode::Unsupported) {
             return systemMode==Nedrysoft::ThemeSupport::SystemMode::Dark;
         }
 
@@ -115,5 +115,5 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupp
         }
     }
 
-    return Nedrysoft::ThemeSupport::SystemMode::Light;
+    return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
 }

@@ -24,6 +24,8 @@
 #ifndef NEDRYSOFT_THEMESUPPORT_THEMESUPPORTCONFIGURATIONWIDGET_H
 #define NEDRYSOFT_THEMESUPPORT_THEMESUPPORTCONFIGURATIONWIDGET_H
 
+#include "ThemeSupportSpec.h"
+
 #include <QWidget>
 
 namespace Nedrysoft { namespace ThemeSupport {
@@ -37,7 +39,7 @@ namespace Nedrysoft { namespace ThemeSupport {
      *
      * @class       Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget ThemeSupportConfigurationWidget.h <ThemeSupportConfigurationWidget>
      */
-    class ThemeSupportConfigurationWidget :
+    class NEDRYSOFT_THEMESUPPORT_DLLSPEC ThemeSupportConfigurationWidget :
             public QWidget {
 
         private:

@@ -30,9 +30,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
+add_definitions(-DQT_NO_KEYWORDS)
 
-ADD_DEFINITIONS(-DNEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT)
+add_definitions(-DNEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT)
 
 # create the font awesome library
 
@@ -81,6 +81,7 @@ set(library_SOURCES
     src/ThemeSupportConfigurationWidget.ui
     src/ThemeSupport.cpp
     src/ThemeSupport.h
+    src/ThemeSupportSpec.h
     src/resources.qrc
 )
 

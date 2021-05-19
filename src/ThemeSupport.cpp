@@ -93,7 +93,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) -> QColor {
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
-
+#include <QDebug>
 auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport::Theme theme) -> void {
     auto activeMode = systemMode();
     bool clearTheme = false;
@@ -106,6 +106,8 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport
             case Nedrysoft::ThemeSupport::SystemMode::Unsupported: {
                 if (theme==Nedrysoft::ThemeSupport::Theme::Dark) {
                     forceTheme = true;
+                } else {
+                    clearTheme = true;
                 }
 
                 break;
@@ -171,11 +173,20 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &name) -> 
         }
      }
 
+    auto fieldMatch = QRegularExpression(
+            "\\/\\*\\s*(.*)\\s*\\*\\/",
+            QRegularExpression::CaseInsensitiveOption);
+
+    int matchPosition = 0;
+
+    /*while ((matchPosition = stylesheet.indexOf(fieldMatch, matchPosition)) != -1) {
+        // check if in map.
+    }*/
+
     QPalette palette = qGuiApp->palette();
 
     if (paletteSettings) {
-        QMap<QString, QPalette::ColorGroup> groups = groupMap();
-
+        auto groups = groupMap();
         auto roles = roleMap();
 
         for (auto group : paletteSettings->childGroups()) {

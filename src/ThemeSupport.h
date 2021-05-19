@@ -26,16 +26,12 @@
 
 #include <QtGlobal>
 
+#include "ThemeSupportSpec.h"
+
 #include <QColor>
 #include <QObject>
 #include <QPalette>
 #include <QRgb>
-
-#if ( defined(NEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT))
-#define NEDRYSOFT_THEMESUPPORT_DLLSPEC Q_DECL_EXPORT
-#else
-#define NEDRYSOFT_THEMESUPPORT_DLLSPEC Q_DECL_IMPORT
-#endif
 
 namespace Nedrysoft { namespace ThemeSupport {
     class ThemeSupportConfigurationWidget;

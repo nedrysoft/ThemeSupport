@@ -27,17 +27,28 @@
 #include <QStyle>
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
-    return m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Dark;
+    if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
+        auto textLightness = QApplication::palette().text().color().lightnessF();
+        auto backgroundLightness = QApplication::palette().window().color().lightnessF();
+
+        if (textLightness > backgroundLightness) {
+            return true;
+        }
+
+        return false;
+    }
+
+    return m_activeTheme==Nedrysoft::ThemeSupport::Theme::Dark;
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor {
     return qobject_cast<QApplication *>(QCoreApplication::instance())->style()->standardPalette().color(QPalette::Highlight);
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
-    return true;
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupport::SystemMode {
+    return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode(bool *osSupportsThemes) -> Nedrysoft::ThemeSupport::SystemMode {
-    return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform() -> bool {
+    return true;
 }
