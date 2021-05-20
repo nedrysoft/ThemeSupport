@@ -48,6 +48,7 @@ QMenu::item:disabled {
 
 QComboBox {
     background-color: /*Base*/;
+    color: /*Text.Active*/;
 }
 
 QComboBox::item {
@@ -55,12 +56,12 @@ QComboBox::item {
 }
 
 QComboBox::item:disabled {
-    color: #757578;
+    color: /*Text.Disabled*/
 }
 
 QComboBox::drop-down {
-    color: white;
-    background: #303030;
+    color: /*Text.Active*/;
+    background: /*Base*/;
 }
 
 QLineEdit {

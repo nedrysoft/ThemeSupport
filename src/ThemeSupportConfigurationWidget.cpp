@@ -44,16 +44,24 @@ Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurat
     ui->themeComboBox->addItem("Light", QVariant::fromValue(Nedrysoft::ThemeSupport::Theme::Light));
 
     connect(ui->themeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index) {
+#if defined(W_OS_MACOS)
         auto theme = ui->themeComboBox->itemData(index, Qt::UserRole).value<Nedrysoft::ThemeSupport::Theme>();
 
         auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
         themeSupport->selectActive(theme);
+#endif
     });
 
     auto platformTheme = settings.value("ThemeSupport/Theme","System").toString();
 
+    ui->themeComboBox->blockSignals(true);
     ui->themeComboBox->setCurrentText(platformTheme);
+    ui->themeComboBox->blockSignals(false);
+
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
+    addPlatformOptions(ui->formLayout);
 }
 
 Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::~ThemeSupportConfigurationWidget() {
@@ -65,10 +73,17 @@ auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::acceptSettings() 
 
     settings.setValue("ThemeSupport/Theme", ui->themeComboBox->currentText());
 
+    applyPlatformOptions();
+
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
+    themeSupport->selectActive(ui->themeComboBox->currentData().value<Nedrysoft::ThemeSupport::Theme>());
+
     return true;
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::canAcceptSettings() -> bool {
+
     return true;
 }
 

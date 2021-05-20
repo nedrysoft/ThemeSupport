@@ -86,13 +86,23 @@ set(library_SOURCES
 )
 
 if(APPLE)
-    set(platform_SOURCES src/ThemeSupport_mac.mm)
+    set(platform_SOURCES
+            src/ThemeSupport_mac.mm
+            src/ThemeSupportConfigurationWidget_mac.cpp
+    )
     set(platform_LIBS "-framework Foundation" "-framework Cocoa" "stdc++" "objc")
 elseif(UNIX)
-    set(platform_SOURCES src/ThemeSupport_linux.cpp)
+    set(platform_SOURCES
+            src/ThemeSupport_linux.cpp
+            src/ThemeSupportConfigurationWidget_linux.cpp
+    )
+
     set(platform_LIBS "")
 elseif(WIN32)
-    set(platform_SOURCES src/ThemeSupport_windows.cpp)
+    set(platform_SOURCES
+            src/ThemeSupport_windows.cpp
+            src/ThemeSupportConfigurationWidget_windows.cpp
+    )
     set(platform_LIBS "")
 
     configure_file("src/Version.h.in" "Version.h")

@@ -93,7 +93,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) -> QColor {
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
-#include <QDebug>
+
 auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport::Theme theme) -> void {
     auto activeMode = systemMode();
     bool clearTheme = false;
@@ -215,6 +215,14 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &name) -> 
         delete paletteSettings;
     }
 
+    /**
+     * The GTK style plugin does not allow palette changes, in order to change the GTK theme (or any other
+     * themes that behave like it, we need to so much more stylesheet work.
+     *
+     * PaletteWidget *w = new PaletteWidget;
+     * w->setPalette(palette);
+     */
+
     qApp->blockSignals(true);
     qApp->setPalette(palette);
     qApp->setStyleSheet(stylesheet);
@@ -318,19 +326,16 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::isForced() -> bool {
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
     QSettings settings;
-    auto activeTheme = Nedrysoft::ThemeSupport::Theme::System;
 
     auto platformTheme = settings.value(
             "ThemeSupport/Theme",
             "System").toString();
 
     if (platformTheme=="Dark") {
-        activeTheme = Nedrysoft::ThemeSupport::Theme::Dark;
+        selectActive(Nedrysoft::ThemeSupport::Theme::Dark);
     } else if (platformTheme=="Light") {
-        activeTheme = Nedrysoft::ThemeSupport::Theme::Light;
+        selectActive(Nedrysoft::ThemeSupport::Theme::Light);
     }
 
-    selectActive(activeTheme);
-
-    return initialisePlatform();
+    return true;
 }

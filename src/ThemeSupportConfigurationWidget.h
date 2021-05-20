@@ -24,9 +24,14 @@
 #ifndef NEDRYSOFT_THEMESUPPORT_THEMESUPPORTCONFIGURATIONWIDGET_H
 #define NEDRYSOFT_THEMESUPPORT_THEMESUPPORTCONFIGURATIONWIDGET_H
 
+#include <QtGlobal>
+
 #include "ThemeSupportSpec.h"
 
 #include <QWidget>
+
+class QComboBox;
+class QFormLayout;
 
 namespace Nedrysoft { namespace ThemeSupport {
     namespace Ui {
@@ -82,10 +87,24 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto acceptSettings() -> bool;
 
+            /**
+             * @brief       Add platform specific options to the existing form.
+             */
+            auto addPlatformOptions(QFormLayout *layout) -> void;
+
+            /**
+             * @brief       Apply platform scific options.
+             */
+            auto applyPlatformOptions() -> void;
+
         private:
             //! @cond
 
             Ui::ThemeSupportConfigurationWidget *ui;
+
+#if defined(Q_OS_LINUX)
+            QComboBox *m_themeComboBox;
+#endif
 
             //! @endcond
     };

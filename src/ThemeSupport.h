@@ -30,8 +30,10 @@
 
 #include <QColor>
 #include <QObject>
+#include <QFormLayout>
 #include <QPalette>
 #include <QRgb>
+#include <QWidget>
 
 namespace Nedrysoft { namespace ThemeSupport {
     class ThemeSupportConfigurationWidget;
@@ -167,9 +169,16 @@ namespace Nedrysoft { namespace ThemeSupport {
             /**
              * @brief       Initialises the saved state for the platform specific configuration.
              *
-             * @returns     true if the configuration was restored; otherwise false.
+             * @note        This is a static function and is called twice, once before the application
+             *              instance is created, and again after.  This allows the style to be set
+             *              by the application and overruled by the user.
+             *
+             * @param[in]   beforeApplicationInstantiated true if called before an application instance
+             *              has been created; otherwise after.
+             *
+             * @returns     true if the platform was initialised; otherwise false.
              */
-            auto initialisePlatform() -> bool;
+            static auto initialisePlatform(bool beforeApplicationInstantiated) -> bool;
 
             /**
              * @brief       Returns the singleton instance to the ThemeSupport object.
@@ -203,6 +212,8 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
              auto eventFilter(QObject *object, QEvent *event) -> bool override;
 #endif
+             friend class ThemeSupportConfigurationWidget;
+
         private:
             //! @cond
 

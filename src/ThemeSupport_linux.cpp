@@ -24,10 +24,12 @@
 #include "ThemeSupport.h"
 
 #include <QApplication>
+#include <QComboBox>
 #include <QLibrary>
 #include <QSettings>
 #include <QString>
 #include <QStyle>
+#include <QStyleFactory>
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
     if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
@@ -56,15 +58,21 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
     return qobject_cast<QApplication *>(QCoreApplication::instance())->style()->standardPalette().color(QPalette::Highlight);
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform() -> bool {
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform(bool beforeApplicationInstantiated) -> bool {
     QSettings settings;
 
-    if (settings.value("ThemeSupport/Override", false).toBool()) {
-        auto platformTheme = settings.value("ThemeSupport/Environment/QT_QPA_PLATFORMTHEME");
-        auto styleOverride = settings.value("ThemeSupport/Environment/QT_STYLE_OVERRIDE");
+    if (!beforeApplicationInstantiated) {
+        auto style = settings.value("ThemeSupport/Style","Fusion").toString();
 
-        qputenv("QT_QPA_PLATFORMTHEME", platformTheme.toByteArray());
-        qputenv("QT_STYLE_OVERRIDE", styleOverride.toByteArray());
+        qApp->setStyle(style);
+
+        if (settings.value("ThemeSupport/Override", false).toBool()) {
+            auto platformTheme = settings.value("ThemeSupport/Environment/QT_QPA_PLATFORMTHEME");
+            auto styleOverride = settings.value("ThemeSupport/Environment/QT_STYLE_OVERRIDE");
+
+            //qputenv("QT_QPA_PLATFORMTHEME", platformTheme.toByteArray());
+            //qputenv("QT_STYLE_OVERRIDE", styleOverride.toByteArray());
+        }
     }
 
     return true;
