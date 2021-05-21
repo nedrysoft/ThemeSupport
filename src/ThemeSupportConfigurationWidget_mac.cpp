@@ -29,6 +29,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::addPlatformOption
 
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::applyPlatformOptions()  {
+auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::applyPlatformOptions() ->  void  {
 
 }

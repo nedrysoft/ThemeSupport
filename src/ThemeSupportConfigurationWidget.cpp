@@ -43,8 +43,8 @@ Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurat
     ui->themeComboBox->addItem("Dark", QVariant::fromValue(Nedrysoft::ThemeSupport::Theme::Dark));
     ui->themeComboBox->addItem("Light", QVariant::fromValue(Nedrysoft::ThemeSupport::Theme::Light));
 
-    connect(ui->themeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index) {
-#if defined(W_OS_MACOS)
+    connect(ui->themeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+#if defined(Q_OS_MACOS)
         auto theme = ui->themeComboBox->itemData(index, Qt::UserRole).value<Nedrysoft::ThemeSupport::Theme>();
 
         auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
@@ -58,8 +58,6 @@ Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurat
     ui->themeComboBox->blockSignals(true);
     ui->themeComboBox->setCurrentText(platformTheme);
     ui->themeComboBox->blockSignals(false);
-
-    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
     addPlatformOptions(ui->formLayout);
 }

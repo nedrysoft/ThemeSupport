@@ -49,6 +49,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupp
     return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform() -> bool {
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform(bool beforeApplicationInstantiated) -> bool {
     return true;
 }
