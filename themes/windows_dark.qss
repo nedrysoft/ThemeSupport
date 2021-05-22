@@ -30,7 +30,6 @@ QPushButton {
     background-color: /*Button.Normal*/;
     color: /*ButtonText.Active*/;
 
-    border-radius: 6px;
     padding-left: 12px;
     padding-top: 3px;
     padding-right: 12px;
@@ -59,6 +58,11 @@ QComboBox::item:disabled {
     color: #757578;
 }
 
+QComboBox::drop-down {
+    color: white;
+    background: #303030;
+}
+
 QLineEdit {
     border: none;
     border-bottom: 1px solid #494949;
@@ -77,3 +81,25 @@ QHeaderView::section:horizontal {
 QHeaderView::section:horizontal:only-one {
     border: 0px;
 }
+
+QMenu {
+    background:#191819;
+}
+
+QMenu::item::selected {
+    background:#303030;
+}
+
+QMenu::item::selected:disabled {
+    background: none;
+}
+
+QMenuBar {
+    background: /*Window.Normal*/;
+    color: /*WindowText.Normal*/;
+}
+
+QMenuBar::item:selected {
+    background:#191819;
+}
+

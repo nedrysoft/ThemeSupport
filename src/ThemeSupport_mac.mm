@@ -23,37 +23,45 @@
 
 #include "ThemeSupport.h"
 
-#include <QStyle>
+#include <QSettings>
 
 #import <AppKit/NSAppearance.h>
 #import <AppKit/NSColor.h>
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() -> bool {
-    if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::System) {
-        if (@available(macOS 10.14, *)) {
-            NSAppearance *appearance = nullptr;
-
-            if (@available(macOS 11, *)) {
-                appearance = NSAppearance.currentDrawingAppearance;
-            } else if (@available(macOS 10.14, *)) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                appearance = NSAppearance.currentAppearance;
-#pragma clang diagnostic pop
-            }
-
-            NSAppearanceName basicAppearance = [appearance bestMatchFromAppearancesWithNames:@[
-                    NSAppearanceNameAqua,
-                    NSAppearanceNameDarkAqua
-            ]];
-
-            return [basicAppearance isEqualToString:NSAppearanceNameDarkAqua] == YES;
-        }
-
-        return false;
+    if (m_activeTheme==Nedrysoft::ThemeSupport::Theme::System) {
+        return systemMode()==Nedrysoft::ThemeSupport::SystemMode::Dark;
     }
 
-    return m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Dark;
+    return m_activeTheme==Nedrysoft::ThemeSupport::Theme::Dark;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::systemMode() -> Nedrysoft::ThemeSupport::SystemMode {
+    if (@available(macOS 10.14, *)) {
+        NSAppearance *appearance = nullptr;
+
+        if (@available(macOS 11, *)) {
+            appearance = NSAppearance.currentDrawingAppearance;
+        } else if (@available(macOS 10.14, *)) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            appearance = NSAppearance.currentAppearance;
+#pragma clang diagnostic pop
+        }
+
+        NSAppearanceName basicAppearance = [appearance bestMatchFromAppearancesWithNames:@[
+                NSAppearanceNameAqua,
+                NSAppearanceNameDarkAqua
+        ]];
+
+        if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua] == YES) {
+            return Nedrysoft::ThemeSupport::SystemMode::Dark;
+        }
+
+        return Nedrysoft::ThemeSupport::SystemMode::Light;
+    }
+
+    return Nedrysoft::ThemeSupport::SystemMode::Unsupported;
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor {
@@ -62,4 +70,8 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getHighlightedBackground() -> QColor
     const CGFloat *color = CGColorGetComponents(a);
 
     return QColor::fromRgbF(color[0], color[1], color[2]);
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialisePlatform(bool beforeApplicationInstantiated) -> bool {
+    return true;
 }

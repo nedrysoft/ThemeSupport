@@ -25,19 +25,35 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QRegularExpression>
 #include <QSettings>
+#include <QStyle>
 #include <QTextStream>
 #include <QWidget>
 
+#if defined(Q_OS_MACOS)
+constexpr auto HostPlatform = "macos";
+#elif defined(Q_OS_WINDOWS)
+constexpr auto HostPlatform = "windows";
+#elif defined(Q_OS_LINUX)
+constexpr auto HostPlatform = "linux";
+#else
+#error Unknown platform!
+#endif
+
 //! @cond
 
-Nedrysoft::ThemeSupport::ThemeMode Nedrysoft::ThemeSupport::ThemeSupport::m_themeMode =
-        Nedrysoft::ThemeSupport::ThemeMode::System;
+Nedrysoft::ThemeSupport::Theme Nedrysoft::ThemeSupport::ThemeSupport::m_activeTheme =
+        Nedrysoft::ThemeSupport::Theme::System;
 
 //! @endcond
 
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
     static auto eventProxyWidget = new QWidget;
+
+    connect(this, &Nedrysoft::ThemeSupport::ThemeSupport::destroyed, [=](QObject *){
+        delete eventProxyWidget;
+    });
 
 #if (QT_VERSION_MAJOR<6)
     connect(qobject_cast<QApplication *>(QCoreApplication::instance()), &QApplication::paletteChanged, [=] (const QPalette &) {
@@ -47,18 +63,24 @@ Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
 
     eventProxyWidget->installEventFilter(this);
 
-    setMode(m_themeMode);
+    selectActive(m_activeTheme);
 }
 
 Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
 
 }
 
+auto Nedrysoft::ThemeSupport::ThemeSupport::getInstance() -> Nedrysoft::ThemeSupport::ThemeSupport * {
+    static auto themeSupport = new Nedrysoft::ThemeSupport::ThemeSupport;
+
+    return themeSupport;
+}
+
 #if (QT_VERSION_MAJOR>=6)
 auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent *event) -> bool  {
     switch(event->type()) {
         case QEvent::ApplicationPaletteChange: {
-            Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
+            setMode(setMode);
 
             break;
         }
@@ -76,67 +98,139 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getColor(const QRgb colourPair[]) ->
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::setMode(Nedrysoft::ThemeSupport::ThemeMode mode) -> void {
-    switch(mode) {
-        case Nedrysoft::ThemeSupport::ThemeMode::System: {
-            break;
-        }
+auto Nedrysoft::ThemeSupport::ThemeSupport::selectActive(Nedrysoft::ThemeSupport::Theme theme) -> void {
+    auto activeMode = systemMode();
+    bool clearTheme = false;
+    bool forceTheme = false;
 
-        case Nedrysoft::ThemeSupport::ThemeMode::Light: {
-            loadPalette("light");
-            break;
-        }
+    if (theme==Nedrysoft::ThemeSupport::Theme::System) {
+        clearTheme = true;
+    } else {
+        switch(activeMode) {
+            case Nedrysoft::ThemeSupport::SystemMode::Unsupported: {
+                if (theme==Nedrysoft::ThemeSupport::Theme::Dark) {
+                    forceTheme = true;
+                } else {
+                    clearTheme = true;
+                }
 
-        case Nedrysoft::ThemeSupport::ThemeMode::Dark: {
-            loadPalette("dark");
+                break;
+            }
 
-            break;
+            case Nedrysoft::ThemeSupport::SystemMode::Light: {
+                if (theme==Nedrysoft::ThemeSupport::Theme::Light) {
+                    clearTheme = true;
+                } else {
+                    forceTheme = true;
+                }
+
+                break;
+            }
+
+            case Nedrysoft::ThemeSupport::SystemMode::Dark: {
+                if (theme==Nedrysoft::ThemeSupport::Theme::Dark) {
+                    clearTheme = true;
+                } else {
+                    forceTheme = true;
+                }
+
+                break;
+            }
         }
     }
 
-    m_themeMode = mode;
+    if (clearTheme) {
+        qApp->blockSignals(true);
+        qApp->setPalette(qApp->style()->standardPalette());
+        qApp->setStyleSheet("");
+        qApp->blockSignals(false);
+    }
+
+    if (forceTheme) {
+        if (theme==Nedrysoft::ThemeSupport::Theme::Light) {
+            loadPalette("light");
+        } else {
+            loadPalette("dark");
+        }
+    }
+
+    m_activeTheme = theme;
 
     Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::loadPalette(const QString &name) -> bool {
-    QSettings paletteSettings(
-            QString(":/Nedrysoft/ThemeSupport/themes/macos_%1.palette").arg(name),
-            QSettings::IniFormat);
-
-    QFile stylesheetFile(QString(":/Nedrysoft/ThemeSupport/themes/macos_%1.qss").arg(name));
+    QString paletteFilename(QString(":/Nedrysoft/ThemeSupport/themes/%1_%2.palette").arg(HostPlatform, name));
+    QString stylesheetFilename(QString(":/Nedrysoft/ThemeSupport/themes/%1_%2.qss").arg(HostPlatform, name));
+    QSettings *paletteSettings = nullptr;
     QString stylesheet;
 
-    if (stylesheetFile.exists()) {
+    if (QFile::exists(paletteFilename)) {
+        paletteSettings = new QSettings(paletteFilename, QSettings::IniFormat);
+    }
+
+    if (QFile::exists(stylesheetFilename)) {
+         QFile stylesheetFile(stylesheetFilename);
+
         if (stylesheetFile.open(QFile::ReadOnly)) {
             stylesheet = QString::fromUtf8(stylesheetFile.readAll());
         }
-    }
+     }
+
+    auto fieldMatch = QRegularExpression(
+            "\\/\\*\\s*(.*)\\s*\\*\\/",
+            QRegularExpression::CaseInsensitiveOption);
+
+    int matchPosition = 0;
+
+    /*while ((matchPosition = stylesheet.indexOf(fieldMatch, matchPosition)) != -1) {
+        // check if in map.
+    }*/
 
     QPalette palette = qGuiApp->palette();
 
-    QMap<QString, QPalette::ColorGroup> groups = groupMap();
+    if (paletteSettings) {
+        auto groups = groupMap();
+        auto roles = roleMap();
 
-    auto roles = roleMap();
+        for (auto group : paletteSettings->childGroups()) {
+            paletteSettings->beginGroup(group);
 
-    for (auto group : paletteSettings.childGroups()) {
-        paletteSettings.beginGroup(group);
+            for (auto key : paletteSettings->allKeys()) {
+                auto colourString = paletteSettings->value(key).toString();
 
-        for (auto key : paletteSettings.allKeys()) {
-            auto colourString = paletteSettings.value(key).toString();
+                palette.setColor(groups[group], roles[key], colourString);
 
-            palette.setColor(groups[group], roles[key], colourString);
+                if (!stylesheet.isEmpty()) {
+                    auto fullRegex = QRegularExpression(
+                            QString("\\/\\*\\s*%1\\s*\\*\\/").arg(key + "." + group));
 
-            if (!stylesheet.isEmpty()) {
-                stylesheet = stylesheet.replace("$"+key+"$", colourString);
+                    auto keyRegex = QRegularExpression(
+                            QString("\\/\\*\\s*%1\\s*\\*\\/").arg(key));
+
+                    stylesheet = stylesheet.replace(fullRegex, colourString);
+                    stylesheet = stylesheet.replace(keyRegex, colourString);
+                }
             }
+
+            paletteSettings->endGroup();
         }
 
-        paletteSettings.endGroup();
+        delete paletteSettings;
     }
-    
+
+    /**
+     * The GTK style plugin does not allow palette changes, in order to change the GTK theme (or any other
+     * themes that behave like it, we need to so much more stylesheet work.
+     *
+     * PaletteWidget *w = new PaletteWidget;
+     * w->setPalette(palette);
+     */
+
+    qApp->blockSignals(true);
     qApp->setPalette(palette);
     qApp->setStyleSheet(stylesheet);
+    qApp->blockSignals(false);
 
     return true;
 }
@@ -192,7 +286,9 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::roleMap() -> QMap<QString, QPalette:
     roles["AlternateBase"] = QPalette::AlternateBase;
     roles["ToolTipBase"] = QPalette::ToolTipBase;
     roles["ToolTipText"] = QPalette::ToolTipText;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12,0))
     roles["PlaceholderText"] = QPalette::PlaceholderText;
+#endif
     roles["Text"] = QPalette::Text;
     roles["Button"] = QPalette::Button;
     roles["ButtonText"] = QPalette::ButtonText;
@@ -212,16 +308,38 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::roleMap() -> QMap<QString, QPalette:
     return roles;
 }
 
-auto Nedrysoft::ThemeSupport::ThemeSupport::activeMode() -> Nedrysoft::ThemeSupport::ActiveMode {
-    Nedrysoft::ThemeSupport::ThemeMode mode;
-    bool isValid;
-
-    mode = systemTheme(&isValid);
-
-    if (!isValid) {
-        if (m_themeMode==Nedrysoft::ThemeSupport::ThemeMode::Light) {
-
+auto Nedrysoft::ThemeSupport::ThemeSupport::isForced() -> bool {
+    if (systemMode()==Nedrysoft::ThemeSupport::SystemMode::Unsupported) {
+        if (Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()) {
+            return true;
+        }
+    } else {
+        if (systemMode() == Nedrysoft::ThemeSupport::SystemMode::Dark) {
+            if (!Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()) {
+                return true;
+            }
+        } else {
+            if (Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()) {
+                return true;
+            }
         }
     }
 
+    return false;
+}
+
+auto Nedrysoft::ThemeSupport::ThemeSupport::initialise() -> bool {
+    QSettings settings;
+
+    auto platformTheme = settings.value(
+            "ThemeSupport/Theme",
+            "System").toString();
+
+    if (platformTheme=="Dark") {
+        selectActive(Nedrysoft::ThemeSupport::Theme::Dark);
+    } else if (platformTheme=="Light") {
+        selectActive(Nedrysoft::ThemeSupport::Theme::Light);
+    }
+
+    return true;
 }

@@ -45,7 +45,7 @@ Shadow=#ff000000
 Text=#d8ffffff
 ToolTipBase=#3fffffff
 ToolTipText=#ff000000
-Window=#ff323232
+Window=#202421
 WindowText=#d8ffffff
 
 [Disabled]
@@ -67,7 +67,7 @@ Shadow=#ff000000
 Text=#3fffffff
 ToolTipBase=#3fffffff
 ToolTipText=#ff000000
-Window=#ff323232
+Window=#202421
 WindowText=#3fffffff
 
 [Inactive]
@@ -89,7 +89,7 @@ Shadow=#ff000000
 Text=#d8ffffff
 ToolTipBase=#3fffffff
 ToolTipText=#ff000000
-Window=#ff323232
+Window=#202421
 WindowText=#d8ffffff
 
 [Normal]
@@ -111,5 +111,5 @@ Shadow=#ff000000
 Text=#d8ffffff
 ToolTipBase=#3fffffff
 ToolTipText=#ff000000
-Window=#ff323232
+Window=#202421
 WindowText=#d8ffffff

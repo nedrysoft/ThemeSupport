@@ -26,25 +26,34 @@
 
 #include <QtGlobal>
 
+#include "ThemeSupportSpec.h"
+
 #include <QColor>
 #include <QObject>
+#include <QFormLayout>
+#include <QPalette>
 #include <QRgb>
-
-#if ( defined(NEDRYSOFT_LIBRARY_THEMESUPPORT_EXPORT))
-#define NEDRYSOFT_THEMESUPPORT_DLLSPEC Q_DECL_EXPORT
-#else
-#define NEDRYSOFT_THEMESUPPORT_DLLSPEC Q_DECL_IMPORT
-#endif
+#include <QWidget>
 
 namespace Nedrysoft { namespace ThemeSupport {
-    enum class ThemeMode {
+    class ThemeSupportConfigurationWidget;
+
+    enum class Theme {
         System,
+        Light,
+        Dark
+    };
+
+    enum class SystemMode {
+        Unsupported,
         Light,
         Dark
     };
 
     /**
      * @brief       The ThemeSupport class provides information about the operating system theme.
+     *
+     * @class       Nedrysoft::ThemeSupport::ThemeSupport ThemeSupport.h <ThemeSupport>
      */
     class NEDRYSOFT_THEMESUPPORT_DLLSPEC ThemeSupport :
             public QObject {
@@ -52,30 +61,31 @@ namespace Nedrysoft { namespace ThemeSupport {
         public:
             Q_OBJECT
 
-        public:
+        private:
             /**
              * @brief       Constructs a new ThemeSupport instance.
              */
             explicit ThemeSupport();
 
+        public:
             /**
              * @brief       Destroys the ThemeSupport.
              */
             ~ThemeSupport();
 
             /**
-             * @brief       Sets the application theme mode.
+             * @brief       Sets the active application theme.
              *
-             * @param[in]   mode the mode to set.
+             * @param[in]   mode the to set as active.
              */
-            auto setMode(ThemeMode mode) -> void;
+            auto selectActive(Theme theme) -> void;
 
             /**
-             * @brief       Returns the current OS theme mode.
+             * @brief       Returns whether the OS is in dark mode.
              *
              * @returns     true if dark mode; otherwise false.
              */
-            static auto isDarkMode() -> bool;
+            auto isDarkMode() -> bool;
 
             /**
              * @brief       This signal is emitted when OS theme is changed.
@@ -91,7 +101,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     the colour.
              */
-            static auto getColor(const QRgb PushButtonColor[]) -> QColor;
+            auto getColor(const QRgb PushButtonColor[]) -> QColor;
 
             /**
              * @brief       Returns the highlighted text background color
@@ -101,7 +111,7 @@ namespace Nedrysoft { namespace ThemeSupport {
              *
              * @returns     the colour
              */
-            static auto getHighlightedBackground() -> QColor;
+            auto getHighlightedBackground() -> QColor;
 
             /**
              * @brief       Loads a saved palette.
@@ -121,6 +131,62 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto savePalette(QString filename) -> bool;
 
+            /**
+             * @brief       Initialise the theme.
+             *
+             * @note        This function should be called as early as possible in the application to initialise
+             *              the theming.  This may be an empty function depending on the platform and the specific
+             *              mechanisms used to switch between light and dark mode.
+             *
+             * @returns     true if the platform was initialised ok; otherwise false.
+             */
+            auto initialise() -> bool;
+
+            /**
+             * @brief       Returns a configuration widget that the application can use.
+             *
+             * @returns     the configuration widget (the widget is owned by the caller)
+             */
+            auto configurationWidget() -> Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget *;
+
+            /**
+             * @brief       Returns the current selected mode if OS supports light/dark mode.
+             *
+             * @returns     returns the currently active system mode, if the OS does not support light/dark modes then
+             *              this function will return Nedrysoft::ThemeSupport::SystemMode::Unsupported.
+             */
+            auto systemMode() -> Nedrysoft::ThemeSupport::SystemMode;
+
+            /**
+             * @brief       Returns whether the currently selected theme is forced.
+             *
+             * @note        This implements the logic to deal with system mode light/dark themes.
+             *
+             * @returns     true if the selected theme is forced; otherwise false.
+             */
+            auto isForced() -> bool;
+
+            /**
+             * @brief       Initialises the saved state for the platform specific configuration.
+             *
+             * @note        This is a static function and is called twice, once before the application
+             *              instance is created, and again after.  This allows the style to be set
+             *              by the application and overruled by the user.
+             *
+             * @param[in]   beforeApplicationInstantiated true if called before an application instance
+             *              has been created; otherwise after.
+             *
+             * @returns     true if the platform was initialised; otherwise false.
+             */
+            static auto initialisePlatform(bool beforeApplicationInstantiated) -> bool;
+
+            /**
+             * @brief       Returns the singleton instance to the ThemeSupport object.
+             *
+             * @returns     the singleton instance
+             */
+            static auto getInstance() -> Nedrysoft::ThemeSupport::ThemeSupport *;
+
         protected:
             /**
              * @brief       Returns the map for converting from a color role string to ColorRole.
@@ -136,15 +202,6 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto groupMap() -> QMap<QString, QPalette::ColorGroup>;
 
-            /**
-             * @brief       Returns the current active operating system theme.
-             *
-             * @param[out]  valid is set to true if the OS supports themes; otherwise false;
-             *
-             * @returns     the theme mode.
-             */
-            static auto systemTheme(bool *valid) -> Nedrysoft::ThemeSupport::ThemeMode;
-
 #if (QT_VERSION_MAJOR>=6)
             /**
              * @brief       Reimplements: QObject::event(QEvent *event).
@@ -155,14 +212,19 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
              auto eventFilter(QObject *object, QEvent *event) -> bool override;
 #endif
+             friend class ThemeSupportConfigurationWidget;
+
         private:
             //! @cond
 
-            static ThemeMode m_themeMode;
+            static Theme m_activeTheme;
             static QWidget *m_eventProxyWidget;
 
             //! @endcond
     };
 }}
+
+Q_DECLARE_METATYPE(Nedrysoft::ThemeSupport::SystemMode)
+Q_DECLARE_METATYPE(Nedrysoft::ThemeSupport::Theme)
 
 #endif // NEDRYSOFT_THEMESUPPORT_THEMESUPPORT_H
