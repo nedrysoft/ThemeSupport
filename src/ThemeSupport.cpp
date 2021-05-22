@@ -51,6 +51,10 @@ Nedrysoft::ThemeSupport::Theme Nedrysoft::ThemeSupport::ThemeSupport::m_activeTh
 Nedrysoft::ThemeSupport::ThemeSupport::ThemeSupport() {
     static auto eventProxyWidget = new QWidget;
 
+    connect(this, &Nedrysoft::ThemeSupport::ThemeSupport::destroyed, [=](QObject *){
+        delete eventProxyWidget;
+    });
+
 #if (QT_VERSION_MAJOR<6)
     connect(qobject_cast<QApplication *>(QCoreApplication::instance()), &QApplication::paletteChanged, [=] (const QPalette &) {
         Q_EMIT themeChanged(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
@@ -67,9 +71,9 @@ Nedrysoft::ThemeSupport::ThemeSupport::~ThemeSupport() {
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupport::getInstance() -> Nedrysoft::ThemeSupport::ThemeSupport * {
-    static Nedrysoft::ThemeSupport::ThemeSupport themeSupport;
+    static auto themeSupport = new Nedrysoft::ThemeSupport::ThemeSupport;
 
-    return &themeSupport;
+    return themeSupport;
 }
 
 #if (QT_VERSION_MAJOR>=6)
