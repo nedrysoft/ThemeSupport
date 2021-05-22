@@ -38,6 +38,15 @@ QPushButton {
     border: none;
 }
 
+QPushButton:hover {
+    background-color: #4c4c4c;
+}
+
+QPushButton:disabled {
+    background-color: /*Button.Disabled*/;
+    color: /*ButtonText.Disabled*/;
+}
+
 QMenu::item {
     color: /*Text*/;
 }

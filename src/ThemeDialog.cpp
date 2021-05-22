@@ -38,12 +38,16 @@ Nedrysoft::ThemeSupport::ThemeDialog::ThemeDialog(QWidget *parent) :
 
     updateTitlebar();
 
-    m_themeChangedConnection = connect(
+    auto signal=connect(
             themeSupport,
             &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
             [=](bool isDarkMode) {
 
         updateTitlebar();
+    });
+
+    connect(this, &QObject::destroyed, [themeSupport, signal]() {
+        themeSupport->disconnect(signal);
     });
 #endif
 }
@@ -75,7 +79,5 @@ auto Nedrysoft::ThemeSupport::ThemeDialog::updateTitlebar() -> void {
 }
 
 Nedrysoft::ThemeSupport::ThemeDialog::~ThemeDialog() {
-#if defined(Q_OS_MACOS)
-    disconnect(m_themeChangedConnection);
-#endif
+
 }

@@ -97,6 +97,11 @@ namespace Nedrysoft { namespace ThemeSupport {
              */
             auto applyPlatformOptions() -> void;
 
+            /**
+             * @brief       This signal is emitted when the settings have been changed.
+             */
+            Q_SIGNAL void settingsChanged();
+
         private:
             //! @cond
 

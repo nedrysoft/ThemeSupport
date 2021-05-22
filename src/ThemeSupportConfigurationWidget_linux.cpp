@@ -25,11 +25,13 @@
 
 #include "ThemeSupport.h"
 
+#include <ISettingsPage>
 #include <QApplication>
 #include <QComboBox>
 #include <QFormLayout>
 #include <QSettings>
 #include <QStyleFactory>
+#include <QDebug>
 
 auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::addPlatformOptions(QFormLayout *layout) -> void {
     QSettings settings;
@@ -46,15 +48,27 @@ auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::addPlatformOption
 
     auto platformStyle = settings.value("ThemeSupport/Style","Fusion").toString();
 
-    auto index = m_themeComboBox->findData(platformStyle);
+    auto index = m_themeComboBox->findText(platformStyle);
 
     if (index>=0) {
         m_themeComboBox->blockSignals(true);
         m_themeComboBox->setCurrentIndex(index);
         m_themeComboBox->blockSignals(false);
     }
+
+    connect(
+            m_themeComboBox,
+            qOverload<const QString &>(&QComboBox::currentIndexChanged),
+            [=](const QString &text) {
+
+        Q_EMIT settingsChanged();
+    });
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::applyPlatformOptions()  -> void {
+    QSettings settings;
+
     qApp->setStyle(m_themeComboBox->currentText());
+
+    settings.setValue("ThemeSupport/Style",m_themeComboBox->currentText());
 }

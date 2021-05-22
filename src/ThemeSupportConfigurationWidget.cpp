@@ -28,9 +28,10 @@
 
 #include <QSettings>
 
-Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurationWidget(QWidget *parent) :
-        QWidget(parent),
-        ui(new Nedrysoft::ThemeSupport::Ui::ThemeSupportConfigurationWidget) {
+Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurationWidget(
+        QWidget *parent) :
+            QWidget(parent),
+            ui(new Nedrysoft::ThemeSupport::Ui::ThemeSupportConfigurationWidget) {
 
     QSettings settings;
 
@@ -44,6 +45,8 @@ Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::ThemeSupportConfigurat
     ui->themeComboBox->addItem("Light", QVariant::fromValue(Nedrysoft::ThemeSupport::Theme::Light));
 
     connect(ui->themeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        Q_EMIT settingsChanged();
+
 #if defined(Q_OS_MACOS)
         auto theme = ui->themeComboBox->itemData(index, Qt::UserRole).value<Nedrysoft::ThemeSupport::Theme>();
 
@@ -81,7 +84,6 @@ auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::acceptSettings() 
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::canAcceptSettings() -> bool {
-
     return true;
 }
 

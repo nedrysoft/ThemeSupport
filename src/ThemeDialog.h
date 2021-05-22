@@ -59,9 +59,6 @@ namespace Nedrysoft { namespace ThemeSupport {
              * @brief       Updates the titlebar on macOS when the theme is being forced.
              */
             auto updateTitlebar() -> void;
-
-        private:
-            QMetaObject::Connection m_themeChangedConnection;
     };
 }};
 
