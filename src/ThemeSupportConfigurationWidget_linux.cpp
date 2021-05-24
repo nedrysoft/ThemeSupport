@@ -31,7 +31,6 @@
 #include <QFormLayout>
 #include <QSettings>
 #include <QStyleFactory>
-#include <QDebug>
 
 auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::addPlatformOptions(QFormLayout *layout) -> void {
     QSettings settings;
