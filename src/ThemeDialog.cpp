@@ -39,12 +39,13 @@ Nedrysoft::ThemeSupport::ThemeDialog::ThemeDialog(QWidget *parent) :
     updateTitlebar();
 
     auto signal=connect(
-            themeSupport,
-            &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
-            [=](bool isDarkMode) {
+        themeSupport,
+        &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
+        [=](bool isDarkMode) {
 
-        updateTitlebar();
-    });
+            updateTitlebar();
+        }
+    );
 
     connect(this, &QObject::destroyed, [themeSupport, signal]() {
         themeSupport->disconnect(signal);

@@ -56,12 +56,13 @@ auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::addPlatformOption
     }
 
     connect(
-            m_themeComboBox,
-            qOverload<const QString &>(&QComboBox::currentIndexChanged),
-            [=](const QString &text) {
+        m_themeComboBox,
+        qOverload<const QString &>(&QComboBox::currentIndexChanged),
+        [=](const QString &text) {
 
-        Q_EMIT settingsChanged();
-    });
+            Q_EMIT settingsChanged();
+        }
+    );
 }
 
 auto Nedrysoft::ThemeSupport::ThemeSupportConfigurationWidget::applyPlatformOptions()  -> void {
