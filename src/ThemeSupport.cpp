@@ -80,7 +80,7 @@ auto Nedrysoft::ThemeSupport::ThemeSupport::getInstance() -> Nedrysoft::ThemeSup
 auto Nedrysoft::ThemeSupport::ThemeSupport::eventFilter(QObject *object, QEvent *event) -> bool  {
     switch(event->type()) {
         case QEvent::ApplicationPaletteChange: {
-            setMode(setMode);
+//            setMode(setMode);
 
             break;
         }
